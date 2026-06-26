@@ -2,7 +2,7 @@
 
 set -e
 trap 'echo "[ERROR] Error in line $LINENO when executing: $BASH_COMMAND"' ERR
-trap 'echo tar1090.sh: exiting; trap - SIGTERM; pkill -P $$ || true; exit 0' SIGTERM SIGINT SIGHUP SIGQUIT
+trap 'echo adsb-map.sh: exiting; trap - SIGTERM; pkill -P $$ || true; exit 0' SIGTERM SIGINT SIGHUP SIGQUIT
 
 # run with lowest priority
 renice 20 $$ || true
@@ -22,7 +22,7 @@ fi
 
 if [[ -z $HISTORY_SIZE || -z $INTERVAL || -z $CHUNK_SIZE ]]
 then
-    echo "Syntax: bash tar1090.sh <runtime directory> <dump1090 source directory>"
+    echo "Syntax: bash adsb-map.sh <runtime directory> <dump1090 source directory>"
     echo "Missing some settings from environment variables, using defaults:"
     echo "history interval: 8 seconds"
     echo "history size: 450 entries"
@@ -168,7 +168,7 @@ while true; do
         now=$(date +%s%N | head -c-7)
         if (( now > next_error )); then
             if (( next_error != 0 )); then
-                echo "No aircraft.json found in $SRC_DIR during the last 30 seconds! Try restarting dump1090 or reinstalling tar1090 if you switched dump1090 to readsb!"
+                echo "No aircraft.json found in $SRC_DIR during the last 30 seconds! Try restarting dump1090 or reinstalling adsb-map if you switched dump1090 to readsb!"
                 error_printed=1
             fi
             next_error=$(( now + 10000 ))
@@ -240,7 +240,7 @@ if [[ -n "$PF_URL" ]] && [[ "x$PF_ENABLE" != "x0" ]]; then
     while true
     do
         sleep 10 & wait $!
-        TMP="$RUN_DIR/tar1090-tmp.pf.json"
+        TMP="$RUN_DIR/adsb-map-tmp.pf.json"
         if cd "$RUN_DIR" && wget -T 5 -O "$TMP" "$PF_URL" &>/dev/null; then
             sed -i -e 's/"user_l[a-z]*":"[0-9,.,-]*",//g' "$TMP"
             mv "$TMP" pf.json

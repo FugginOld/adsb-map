@@ -1,4 +1,4 @@
-# tar1090 systemd unit file
+# adsb-map systemd unit file
 [Unit]
 Description=SERVICE - compress dump1090 json data
 Wants=network.target
@@ -7,13 +7,13 @@ After=readsb.service
 After=dump1090-fa.service
 
 [Service]
-User=tar1090
+User=adsb-map
 SyslogIdentifier=SERVICE
 RuntimeDirectory=SERVICE
 RuntimeDirectoryMode=0755
-EnvironmentFile=/usr/local/share/tar1090/example_config_dont_edit
+EnvironmentFile=/usr/local/share/adsb-map/example_config_dont_edit
 EnvironmentFile=/etc/default/SERVICE
-ExecStart=/usr/local/share/tar1090/tar1090.sh /run/SERVICE SOURCE_DIR
+ExecStart=/usr/local/share/adsb-map/adsb-map.sh /run/SERVICE SOURCE_DIR
 Type=simple
 Restart=always
 RestartSec=30
