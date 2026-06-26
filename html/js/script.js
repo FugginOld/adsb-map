@@ -995,7 +995,7 @@ function earlyInitPage() {
         SiteCirclesDistances = new Array(5, 10, 20);
         SiteCirclesLineDash = [5, 5];
         SiteCirclesColors = ['#2b3436', '#2b3436', '#2b3436'];
-        MapType_tar1090 = 'carto_light_all';
+        MapType_adsbmap = 'carto_light_all';
         lineWidth=4;
         g.enableLabels=true;
     }
@@ -1746,7 +1746,7 @@ function earlyInitPage() {
 
     if (routeApiUrl) {
         if (location.protocol == 'http:' && routeApiUrl == "https://adsb.im/api/0/routeset") {
-            // adsb.im API provider kindly asks that tar1090 uses http for the route API if possible
+            // adsb.im API provider kindly asks that adsb-map uses http for the route API if possible
             routeApiUrl = "http://adsb.im/api/0/routeset";
         }
         new Toggle({
@@ -2620,13 +2620,13 @@ function ol_map_init() {
     let foundType = false;
     ol.control.LayerSwitcher.forEachRecursive(layers_group, function(lyr) {
         if (lyr.get('name') && lyr.get('type') == 'base') {
-            if (MapType_tar1090 == lyr.get('name')) {
+            if (MapType_adsbmap == lyr.get('name')) {
                 foundType = true;
             }
         }
     });
     if (!foundType) {
-        MapType_tar1090 = "osm";
+        MapType_adsbmap = "osm";
     }
 
     ol.control.LayerSwitcher.forEachRecursive(layers_group, function(lyr) {
@@ -2634,7 +2634,7 @@ function ol_map_init() {
             return;
 
         if (lyr.get('type') == 'base') {
-            if (MapType_tar1090 == lyr.get('name')) {
+            if (MapType_adsbmap == lyr.get('name')) {
                 foundType = true;
                 lyr.setVisible(true);
 
@@ -2647,7 +2647,7 @@ function ol_map_init() {
 
             lyr.on('change:visible', function(evt) {
                 if (evt.target.getVisible()) {
-                    MapType_tar1090 = loStore['MapType_tar1090'] = evt.target.get('name');
+                    MapType_adsbmap = loStore['MapType_adsbmap'] = evt.target.get('name');
                     mapTypeSettings();
                     const onVisible = lyr.get('onVisible');
                     onVisible && onVisible(lyr);
@@ -2816,9 +2816,9 @@ function initMapEarly() {
 
     // Load stored map settings if present
     if (overrideMapType)
-        MapType_tar1090 = overrideMapType;
-    else if (loStore['MapType_tar1090']) {
-        MapType_tar1090 = loStore['MapType_tar1090'];
+        MapType_adsbmap = overrideMapType;
+    else if (loStore['MapType_adsbmap']) {
+        MapType_adsbmap = loStore['MapType_adsbmap'];
     }
 
     mapTypeSettings();
@@ -7246,7 +7246,7 @@ function drawUpintheair() {
     //
     // fetch a json file from the API for the altitudes you want to see:
     //
-    //  wget -O /usr/local/share/tar1090/html/upintheair.json \
+    //  wget -O /usr/local/share/adsb-map/html/upintheair.json \
     //    'http://www.heywhatsthat.com/api/upintheair.json?id=XXXX&refraction=0.25&alts=3048,9144'
     //
     // NB: altitudes are in _meters_, you can specify a list of altitudes
@@ -9074,19 +9074,19 @@ function setSelectedIcao() {
 }
 
 function mapTypeSettings() {
-    if (MapType_tar1090.startsWith('maptiler_sat') || MapType_tar1090.startsWith('maptiler_hybrid')) {
+    if (MapType_adsbmap.startsWith('maptiler_sat') || MapType_adsbmap.startsWith('maptiler_hybrid')) {
         layerDimFactor = 0.25;
-    } else if (MapType_tar1090 == 'esri') {
+    } else if (MapType_adsbmap == 'esri') {
         layerDimFactor = 0.5;
-    } else if (MapType_tar1090 == 'gibs') {
+    } else if (MapType_adsbmap == 'gibs') {
         layerDimFactor = 0.5;
-    } else if (MapType_tar1090.startsWith('carto_raster')) {
+    } else if (MapType_adsbmap.startsWith('carto_raster')) {
         layerDimFactor = 0.70;
         layerExtraContrast = 0.6;
-    } else if (MapType_tar1090.startsWith('carto_light')) {
+    } else if (MapType_adsbmap.startsWith('carto_light')) {
         layerDimFactor = 0.80;
         layerExtraContrast = 0.2;
-    } else if (MapType_tar1090.startsWith('carto_dark')) {
+    } else if (MapType_adsbmap.startsWith('carto_dark')) {
         layerDimFactor = 0.25;
         layerExtraContrast = 0.05;
     } else {

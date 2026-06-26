@@ -6,7 +6,7 @@ HISTORY_SIZE=450
 
 # history duration computes as HISTORY_SIZE x INTERVAL seconds.
 
-# Change to yes to enable UAT/978 display in tar1090
+# Change to yes to enable UAT/978 display in adsb-map
 ENABLE_978=no
 # If running dump978-fa on another computer, modify the IP-address as appropriate.
 # The URL needs to point at where you would normally find the skyaware978 webinterface

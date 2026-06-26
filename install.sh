@@ -8,19 +8,19 @@ trap 'echo "[ERROR] Error in line $LINENO when executing: $BASH_COMMAND"' ERR
 renice 10 $$
 
 srcdir=/run/readsb
-repo="https://github.com/wiedehopf/tar1090"
+repo="https://github.com/FugginOld/adsb-map"
 db_repo="https://github.com/wiedehopf/tar1090-db"
 
 # optional command line options for this install script
 # $1: data source directory
-# $2: web path, default is "tar1090", use "webroot" to place the install at /
+# $2: web path, default is "adsb-map", use "webroot" to place the install at /
 # $3: specify install path
 # $4: specify git path as source instead of pulling from git
 
-ipath=/usr/local/share/tar1090
+ipath=/usr/local/share/adsb-map
 if [[ -n "$3" ]]; then ipath="$3"; fi
 
-if [[ -n "$4" ]] && grep -qs -e 'tar1090' "$4/install.sh"; then git_source="$4"; fi
+if [[ -n "$4" ]] && grep -qs -e 'adsb-map' "$4/install.sh"; then git_source="$4"; fi
 
 lighttpd=no
 nginx=no
@@ -32,9 +32,9 @@ if [[ -z "$gpath" ]]; then gpath="$ipath"; fi
 mkdir -p "$ipath"
 mkdir -p "$gpath"
 
-if useSystemd && ! id -u tar1090 &>/dev/null
+if useSystemd && ! id -u adsb-map &>/dev/null
 then
-    adduser --system --home "$ipath" --no-create-home --quiet tar1090 || adduser --system --home-dir "$ipath" --no-create-home tar1090 || useradd -r -d "$ipath" -M tar1090
+    adduser --system --home "$ipath" --no-create-home --quiet adsb-map || adduser --system --home-dir "$ipath" --no-create-home adsb-map || useradd -r -d "$ipath" -M adsb-map
 fi
 
 # terminate with /
@@ -108,7 +108,7 @@ function getGIT() {
     if cd "$TARGET" &>/dev/null && git fetch --depth 1 origin "$BRANCH" 2>/dev/null && git reset --hard FETCH_HEAD; then popd >/dev/null && return 0; fi
     if ! cd /tmp || ! rm -rf "$TARGET"; then popd > /dev/null; return 1; fi
     if git clone --depth 1 --single-branch --branch "$BRANCH" "$REPO" "$TARGET"; then popd > /dev/null; return 0; fi
-    rm -rf "$TARGET"; tmp=/tmp/getGIT-tmp-tar1090
+    rm -rf "$TARGET"; tmp=/tmp/getGIT-tmp-adsb-map
     if wget -O "$tmp" "$REPO/archive/refs/heads/$BRANCH.zip" && unzip "$tmp" -d "$tmp.folder" >/dev/null; then
         if mv -fT "$tmp.folder/$(ls "$tmp.folder")" "$TARGET"; then rm -rf "$tmp" "$tmp.folder"; popd > /dev/null; return 0; fi
     fi
@@ -146,7 +146,7 @@ if [[ "$1" == "test" ]] || [[ -n "$git_source" ]]; then
     cd "$gpath/git"
     TAR_VERSION="$(cat version)_dirty"
 else
-    VERSION_NEW=$(curl --silent --show-error "https://raw.githubusercontent.com/wiedehopf/tar1090/master/version")
+    VERSION_NEW=$(curl --silent --show-error "https://raw.githubusercontent.com/FugginOld/adsb-map/master/version")
     if  [[ "$(cat "$gpath/git/version" 2>/dev/null)" != "$VERSION_NEW" ]]; then
         if ! getGIT "$repo" "master" "$gpath/git"; then
             echo "Unable to download files, exiting! (Maybe try again?)"
@@ -163,7 +163,7 @@ fi
 
 if [[ -n $1 ]] && [ "$1" != "test" ] ; then
     srcdir=$1
-elif [ -f /etc/default/tar1090_instances ]; then
+elif [ -f /etc/default/adsb-map_instances ]; then
     true
 elif [[ -f /run/dump1090-fa/aircraft.json ]] ; then
     srcdir=/run/dump1090-fa
@@ -193,11 +193,11 @@ fi
 if [[ -n $2 ]]; then
     instances="$srcdir $2"
 elif [[ -n $1 ]] && [ "$1" != "test" ] ; then
-    instances="$1 tar1090"
-elif [ -f /etc/default/tar1090_instances ]; then
-    instances=$(</etc/default/tar1090_instances)	
+    instances="$1 adsb-map"
+elif [ -f /etc/default/adsb-map_instances ]; then
+    instances=$(</etc/default/adsb-map_instances)
 else
-    instances="$srcdir tar1090"
+    instances="$srcdir adsb-map"
 fi
 
 if [[ -d /usr/local/share/adsbexchange-978 ]]; then
@@ -207,24 +207,24 @@ fi
 instances=$(echo -e "$instances" | grep -v -e '^#')
 
 
-if ! diff tar1090.sh "$ipath"/tar1090.sh &>/dev/null; then
+if ! diff deploy/adsb-map.sh "$ipath"/adsb-map.sh &>/dev/null; then
     changed=yes
     while read -r srcdir instance; do
         if [[ -z "$srcdir" || -z "$instance" ]]; then
             continue
         fi
 
-        if [[ "$instance" != "tar1090" ]]; then
-            service="tar1090-$instance"
+        if [[ "$instance" != "adsb-map" ]]; then
+            service="adsb-map-$instance"
         else
-            service="tar1090"
+            service="adsb-map"
         fi
         if useSystemd; then
             systemctl stop "$service" 2>/dev/null || true
         fi
     done < <(echo "$instances")
-    rm -f "$ipath"/tar1090.sh
-    cp tar1090.sh "$ipath"
+    rm -f "$ipath"/adsb-map.sh
+    cp deploy/adsb-map.sh "$ipath"
 fi
 
 
@@ -234,13 +234,13 @@ cp deploy/default "$ipath/example_config_dont_edit"
 cp html/js/config.js "$ipath/example_config.js"
 rm -f "$ipath/default"
 
-# create 95-tar1090-otherport.conf
+# create 95-adsb-map-otherport.conf
 {
-    echo '# serve tar1090 directly on port 8504'
+    echo '# serve adsb-map directly on port 8504'
     echo '$SERVER["socket"] == ":8504" {'
-    cat deploy/88-tar1090.conf
+    cat deploy/88-adsb-map.conf
     echo '}'
-} > 95-tar1090-otherport.conf
+} > 95-adsb-map-otherport.conf
 
 services=()
 names=""
@@ -256,12 +256,12 @@ do
     mkdir -p "$TMP"
     chmod 755 "$TMP"
 
-    if [[ "$instance" != "tar1090" ]]; then
+    if [[ "$instance" != "adsb-map" ]]; then
         html_path="$ipath/html-$instance"
-        service="tar1090-$instance"
+        service="adsb-map-$instance"
     else
         html_path="$ipath/html"
-        service="tar1090"
+        service="adsb-map"
     fi
     services+=("$service")
     names+="$instance "
@@ -270,37 +270,37 @@ do
     useSystemd && copyNoClobber deploy/default /etc/default/"$service"
 
     sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-        -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" 95-tar1090-otherport.conf
+        -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" 95-adsb-map-otherport.conf
 
     if [[ "$instance" == "webroot" ]]; then
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-            -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" deploy/88-tar1090.conf
+            -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" deploy/88-adsb-map.conf
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
             -e "s?/INSTANCE/?/?g" -e "s?HTMLPATH?$html_path?g" deploy/nginx.conf
         sed -i -e "s?/INSTANCE?/?g" deploy/nginx.conf
     else
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-            -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" deploy/88-tar1090.conf
+            -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" deploy/88-adsb-map.conf
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
             -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" deploy/nginx.conf
     fi
 
     if [[ $lighttpd == yes ]] && lighttpd -v | grep -E 'lighttpd/1.4.(5[6-9]|[6-9])' -qs; then
-        sed -i -e 's/compress.filetype/deflate.mimetypes/' deploy/88-tar1090.conf
-        sed -i -e 's/compress.filetype/deflate.mimetypes/' 95-tar1090-otherport.conf
+        sed -i -e 's/compress.filetype/deflate.mimetypes/' deploy/88-adsb-map.conf
+        sed -i -e 's/compress.filetype/deflate.mimetypes/' 95-adsb-map-otherport.conf
         if ! grep -qs -e '^[^#]*"mod_deflate"' /etc/lighttpd/lighttpd.conf /etc/lighttpd/conf-enabled/*; then
-            sed -i -e 's/^[^#]*deflate.mimetypes/#\0/' deploy/88-tar1090.conf
-            sed -i -e 's/^[^#]*deflate.mimetypes/#\0/' 95-tar1090-otherport.conf
+            sed -i -e 's/^[^#]*deflate.mimetypes/#\0/' deploy/88-adsb-map.conf
+            sed -i -e 's/^[^#]*deflate.mimetypes/#\0/' 95-adsb-map-otherport.conf
         fi
     fi
 
 
-    sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" deploy/tar1090.service
+    sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" deploy/adsb-map.service
 
     cp -r -T html "$TMP"
     cp -r -T "$gpath/git-db/db" "$TMP/db-$DB_VERSION"
     sed -i -e "s/let databaseFolder = .*;/let databaseFolder = \"db-$DB_VERSION\";/" "$TMP/index.html"
-    echo "{ \"tar1090Version\": \"$TAR_VERSION\", \"databaseVersion\": \"$DB_VERSION\" }" > "$TMP/version.json"
+    echo "{ \"adsbMapVersion\": \"$TAR_VERSION\", \"databaseVersion\": \"$DB_VERSION\" }" > "$TMP/version.json"
 
     # keep some stuff around
     mv "$html_path/js/config.js" "$TMP/js/config.js" 2>/dev/null || true
@@ -332,7 +332,7 @@ do
         fi
     fi
 
-    cp "$ipath/customIcon.png" "$TMP/images/tar1090-favicon.png" &>/dev/null || true
+    cp "$ipath/customIcon.png" "$TMP/images/adsb-map-favicon.png" &>/dev/null || true
 
     # bust cache for all css and js files
 
@@ -354,21 +354,21 @@ do
         # clean up broken symlinks in conf-enabled ...
         for link in /etc/lighttpd/conf-enabled/*; do [[ -e "$link" ]] || rm -f "$link"; done
         if [[ "$otherport" != "done" ]]; then
-            cp 95-tar1090-otherport.conf /etc/lighttpd/conf-available/
-            ln -f -s /etc/lighttpd/conf-available/95-tar1090-otherport.conf /etc/lighttpd/conf-enabled/95-tar1090-otherport.conf
+            cp 95-adsb-map-otherport.conf /etc/lighttpd/conf-available/
+            ln -f -s /etc/lighttpd/conf-available/95-adsb-map-otherport.conf /etc/lighttpd/conf-enabled/95-adsb-map-otherport.conf
             otherport="done"
             if [ -f /etc/lighttpd/conf.d/69-skybup.conf ]; then
-                mv /etc/lighttpd/conf-enabled/95-tar1090-otherport.conf /etc/lighttpd/conf-enabled/68-tar1090-otherport.conf
+                mv /etc/lighttpd/conf-enabled/95-adsb-map-otherport.conf /etc/lighttpd/conf-enabled/68-adsb-map-otherport.conf
             fi
         fi
         if [ -f /etc/lighttpd/conf.d/69-skybup.conf ] && [[ "$instance" == "webroot" ]]; then
             true
         elif [[ "$instance" == "webroot" ]]
         then
-            cp deploy/88-tar1090.conf /etc/lighttpd/conf-available/99-"${service}".conf
+            cp deploy/88-adsb-map.conf /etc/lighttpd/conf-available/99-"${service}".conf
             ln -f -s /etc/lighttpd/conf-available/99-"${service}".conf /etc/lighttpd/conf-enabled/99-"${service}".conf
         else
-            cp deploy/88-tar1090.conf /etc/lighttpd/conf-available/88-"${service}".conf
+            cp deploy/88-adsb-map.conf /etc/lighttpd/conf-available/88-"${service}".conf
             ln -f -s /etc/lighttpd/conf-available/88-"${service}".conf /etc/lighttpd/conf-enabled/88-"${service}".conf
             if [ -f /etc/lighttpd/conf.d/69-skybup.conf ]; then
                 mv /etc/lighttpd/conf-enabled/88-"${service}".conf /etc/lighttpd/conf-enabled/66-"${service}".conf
@@ -377,9 +377,9 @@ do
     fi
 
     if useSystemd; then
-        if [[ $changed == yes ]] || ! diff deploy/tar1090.service /lib/systemd/system/"${service}".service &>/dev/null
+        if [[ $changed == yes ]] || ! diff deploy/adsb-map.service /lib/systemd/system/"${service}".service &>/dev/null
         then
-            cp deploy/tar1090.service /lib/systemd/system/"${service}".service
+            cp deploy/adsb-map.service /lib/systemd/system/"${service}".service
             if systemctl enable "${service}"
             then
                 echo "Restarting ${service} ..."
@@ -391,10 +391,10 @@ do
     fi
 
     # restore sed modified configuration files
-    mv deploy/88-tar1090.conf.orig deploy/88-tar1090.conf
-    mv 95-tar1090-otherport.conf.orig 95-tar1090-otherport.conf
+    mv deploy/88-adsb-map.conf.orig deploy/88-adsb-map.conf
+    mv 95-adsb-map-otherport.conf.orig 95-adsb-map-otherport.conf
     mv deploy/nginx.conf.orig deploy/nginx.conf
-    mv deploy/tar1090.service.orig deploy/tar1090.service
+    mv deploy/adsb-map.service.orig deploy/adsb-map.service
 done < <(echo "$instances")
 
 if [[ $lighttpd == yes ]]; then
@@ -444,25 +444,25 @@ if [[ $lighttpd == yes ]]; then
     #lighttpd -tt -f /etc/lighttpd/lighttpd.conf && echo success || true
     if ! lighttpd -tt -f /etc/lighttpd/lighttpd.conf &>/dev/null; then
         echo ----------------
-        echo "Lighttpd error, tar1090 will probably not work correctly:"
+        echo "Lighttpd error, adsb-map will probably not work correctly:"
         lighttpd -tt -f /etc/lighttpd/lighttpd.conf
     fi
 
     if grep -qs -e '^compress.cache-dir' /etc/lighttpd/lighttpd.conf; then
         echo -----
-        echo "Disabling compress.cache-dir in /etc/lighttpd/lighttpd.conf due to often causing full disk issues as there is no automatic cleanup mechanism. Add a leading space to the compress.cache-dir line if you don't want tar1090 to mess with it in the future."
+        echo "Disabling compress.cache-dir in /etc/lighttpd/lighttpd.conf due to often causing full disk issues as there is no automatic cleanup mechanism. Add a leading space to the compress.cache-dir line if you don't want adsb-map to mess with it in the future."
         echo -----
-        sed -i -e 's$^compress.cache-dir.*$#\0 # disabled by tar1090, often causes full disk due to not having a cleanup mechanism$' /etc/lighttpd/lighttpd.conf
-    elif ! grep -qs -e 'disabled by tar1090' /etc/lighttpd/lighttpd.conf; then
-        sed -i -e 's$^compress.cache-dir.*$# CAUTION, enabling cache-dir and filetype json will cause full disk when using tar1090\n\0$' /etc/lighttpd/lighttpd.conf
+        sed -i -e 's$^compress.cache-dir.*$#\0 # disabled by adsb-map, often causes full disk due to not having a cleanup mechanism$' /etc/lighttpd/lighttpd.conf
+    elif ! grep -qs -e 'disabled by adsb-map' /etc/lighttpd/lighttpd.conf; then
+        sed -i -e 's$^compress.cache-dir.*$# CAUTION, enabling cache-dir and filetype json will cause full disk when using adsb-map\n\0$' /etc/lighttpd/lighttpd.conf
     fi
     if grep -qs -e '^deflate.cache-dir' /etc/lighttpd/lighttpd.conf; then
         echo -----
-        echo "Disabling deflate.cache-dir in /etc/lighttpd/lighttpd.conf due to often causing full disk issues as there is no automatic cleanup mechanism. Add a leading space to the deflate.cache-dir line if you don't want tar1090 to mess with it in the future."
+        echo "Disabling deflate.cache-dir in /etc/lighttpd/lighttpd.conf due to often causing full disk issues as there is no automatic cleanup mechanism. Add a leading space to the deflate.cache-dir line if you don't want adsb-map to mess with it in the future."
         echo -----
-        sed -i -e 's$^deflate.cache-dir.*$#\0 # disabled by tar1090, often causes full disk due to not having a cleanup mechanism$' /etc/lighttpd/lighttpd.conf
-    elif ! grep -qs -e 'disabled by tar1090' /etc/lighttpd/lighttpd.conf; then
-        sed -i -e 's$^deflate.cache-dir.*$# CAUTION, enabling cache-dir and filetype json will cause full disk when using tar1090\n\0$' /etc/lighttpd/lighttpd.conf
+        sed -i -e 's$^deflate.cache-dir.*$#\0 # disabled by adsb-map, often causes full disk due to not having a cleanup mechanism$' /etc/lighttpd/lighttpd.conf
+    elif ! grep -qs -e 'disabled by adsb-map' /etc/lighttpd/lighttpd.conf; then
+        sed -i -e 's$^deflate.cache-dir.*$# CAUTION, enabling cache-dir and filetype json will cause full disk when using adsb-map\n\0$' /etc/lighttpd/lighttpd.conf
     fi
 fi
 
@@ -476,7 +476,7 @@ echo --------------
 
 if [[ $nginx == yes ]]; then
     echo
-    echo "To configure nginx for tar1090, please add the following line(s) in the server {} section:"
+    echo "To configure nginx for adsb-map, please add the following line(s) in the server {} section:"
     echo
     for service in "${services[@]}"; do
         echo "include ${ipath}/nginx-${service}.conf;"
@@ -494,6 +494,6 @@ elif [[ $nginx == yes ]]; then
         echo "All done! Webinterface once nginx is configured will be available at http://$(ip route get 1.2.3.4 | grep -m1 -o -P 'src \K[0-9,.]*')/$name"
     done
 else
-    echo "All done! You'll need to configure your webserver yourself, see ${ipath}/nginx-tar1090.conf for a reference nginx configuration"
+    echo "All done! You'll need to configure your webserver yourself, see ${ipath}/nginx-adsb-map.conf for a reference nginx configuration"
 fi
 

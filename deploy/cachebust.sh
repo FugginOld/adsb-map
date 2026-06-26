@@ -4,12 +4,12 @@ set -e
 trap 'echo "[ERROR] Error in line $LINENO when executing: $BASH_COMMAND"' ERR
 
 if [[ -z "$1" ]] || [[ -z "$2" ]]; then
-    echo "ERROR: usage: ./cachebust.sh <path_to_cachebust.list> <tar1090_html_folder>"
+    echo "ERROR: usage: ./cachebust.sh <path_to_cachebust.list> <adsb-map_html_folder>"
     exit 1
 fi
 
 # most common way to use this:
-# ./cachebust.sh cachebust.list <tar1090_html_folder>
+# ./cachebust.sh cachebust.list <adsb-map_html_folder>
 
 LISTPATH="$1"
 HTMLFOLDER="$2"

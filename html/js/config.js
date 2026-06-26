@@ -52,7 +52,7 @@
 // actual_range_show = true;
 
 // which map is displayed to new visitors
-// MapType_tar1090 = "osm";
+// MapType_adsbmap = "osm";
 //
 // valid values for the above setting:
 // osm
@@ -200,7 +200,7 @@ ColorByAlt = {
 //SiteCirclesLineDash = [5, 5]; // null - solid line, [5, 5] - dashed line with 5 pixel lines and spaces in between
 
 // Controls page title, righthand pane when nothing is selected
-//PageName = "tar1090";
+//PageName = "adsb-map";
 
 // Show country flags by ICAO addresses?
 //ShowFlags = true;
@@ -243,7 +243,7 @@ ColorByAlt = {
 // filterTISB = false;
 
 // image configuration link (back to a webUI for feeder setup)
-// if the link is supposed to point to the same host that tar1090
+// if the link is supposed to point to the same host that adsb-map
 // is running on the token 'HOSTNAME' (without quotes) in the Link
 // text will be replaced with the current hostname at runtime
 //
@@ -334,12 +334,12 @@ HideCols = [
 // jetphotoLinks = false;
 
 // showSil = false;
-// this shows small pictures in the details but they need to be provided by the user in the folder /usr/local/share/tar1090/aircraft_sil
+// this shows small pictures in the details but they need to be provided by the user in the folder /usr/local/share/adsb-map/aircraft_sil
 // showPictures needs to be enabled as well
 // to only get these pictures disable the planespottersAPI
 // pictures need to be named A330.png and so forth with the type code in the form TYPE.png
 // provide ZZZZ.png to be shown when the type is not known.
-// this feature is provided as is please don't expect tar1090's support for getting the pictures right.
+// this feature is provided as is please don't expect adsb-map's support for getting the pictures right.
 
 // labelsGeom = false; // labels: uses geometric altitude (WGS84 ellipsoid unless geomUseEGM is enabled
 // geomUseEGM = false; // use EGM96 for displaying geometric altitudes (extra load time!)

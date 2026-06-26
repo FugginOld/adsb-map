@@ -59,7 +59,7 @@ let actual_range_outline_dash = null; // null - solid line, [5, 5] - dashed line
 let actual_range_show = true;
 
 // which map is displayed to new visitors
-let MapType_tar1090 = "osm";
+let MapType_adsbmap = "osm";
 let defaultOverlays = [];
 let dwdLayers = 'dwd:RADOLAN-RY';
 
@@ -211,7 +211,7 @@ let SiteCirclesColors = ['#000000', '#000000', '#000000'];
 let SiteCirclesLineDash = null; // null - solid line, [5, 5] - dashed line with 5 pixel lines and spaces in between
 
 // Controls page title, righthand pane when nothing is selected
-let PageName = "tar1090";
+let PageName = "adsb-map";
 
 // Show country flags by ICAO addresses?
 let ShowFlags = true;
@@ -359,12 +359,12 @@ let debugRoute = false; // bunch of debugging console output for route api
 let jetphotoLinks = false;
 
 let showSil = false;
-// this shows small pictures in the details but they need to be provided by the user in the folder /usr/local/share/tar1090/aircraft_sil
+// this shows small pictures in the details but they need to be provided by the user in the folder /usr/local/share/adsb-map/aircraft_sil
 // showPictures needs to be enabled as well
 // to only get these pictures disable the planespottersAPI
 // pictures need to be named A330.png and so forth with the type code in the form TYPE.png
 // provide ZZZZ.png to be shown when the type is not known.
-// this feature is provided as is please don't expect tar1090's support for getting the pictures right.
+// this feature is provided as is please don't expect adsb-map's support for getting the pictures right.
 
 let labelsGeom = false; // labels: uses geometric altitude (WGS84 ellipsoid unless geomUseEGM is enabled
 let geomUseEGM = false; // use EGM96 for displaying geometric altitudes (extra load time!)

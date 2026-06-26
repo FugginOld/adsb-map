@@ -1,16 +1,16 @@
 #!/bin/bash
 
-instance=tar1090
+instance=adsb-map
 echo --------------
 if [[ -n $1 ]]; then
-	instance="tar1090-$1"
-    rm -rf "/usr/local/share/tar1090/html-$1"
-    echo "Removing tar1090, instance name $instance!"
+	instance="adsb-map-$1"
+    rm -rf "/usr/local/share/adsb-map/html-$1"
+    echo "Removing adsb-map, instance name $instance!"
 else
-    echo "Removing tar1090, all instances!"
-	rm -rf /usr/local/share/tar1090
-    rm -f /etc/lighttpd/conf-available/*tar1090*
-    rm -f /etc/lighttpd/conf-enabled/*tar1090*
+    echo "Removing adsb-map, all instances!"
+	rm -rf /usr/local/share/adsb-map
+    rm -f /etc/lighttpd/conf-available/*adsb-map*
+    rm -f /etc/lighttpd/conf-enabled/*adsb-map*
 fi
 echo --------------
 
@@ -34,4 +34,4 @@ systemctl restart lighttpd
 
 
 echo --------------
-echo "tar1090 is now gone! Shoo shoo!"
+echo "adsb-map is now gone! Shoo shoo!"

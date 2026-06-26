@@ -1,7 +1,7 @@
-# tar1090
+# adsb-map
 
 
-![Screenshot1](https://raw.githubusercontent.com/wiedehopf/tar1090/screenshots/screenshot3.png)
+![Screenshot1](https://raw.githubusercontent.com/FugginOld/adsb-map/screenshots/screenshot3.png)
 
 Provides an improved webinterface for use with ADS-B decoders readsb / dump1090-fa
 
@@ -18,36 +18,36 @@ See the bottom of this page or the LICENSE for details.
 While striving not to disrupt an existing Raspbian / Debian / Ubuntu installation, this can't be guaranteed.
 This install script assumes Raspbian / Debian / Ubunutu and will not work on systems without apt.
 
-tar1090 is not a readsb / dump1090-fa replacement, it merely adds an additional webinterface for an existing readsb or dump1090-fa installation.
+adsb-map is not a readsb / dump1090-fa replacement, it merely adds an additional webinterface for an existing readsb or dump1090-fa installation.
 dump1090-mutability installations should work as well, aircraft details will be limited though.
 
 ## Installation
 
 ```
-sudo bash -c "$(wget -nv -O - https://github.com/wiedehopf/tar1090/raw/master/install.sh)"
+sudo bash -c "$(wget -nv -O - https://github.com/FugginOld/adsb-map/raw/master/install.sh)"
 ```
 
 ## View the added webinterface
 
 Click the following URL and replace the IP address with address of your Raspberry Pi:
 
-http://192.168.x.yy/tar1090
+http://192.168.x.yy/adsb-map
 
 If you are curious about your coverage, try this URL:
 
-http://192.168.x.yy/tar1090/?pTracks
+http://192.168.x.yy/adsb-map/?pTracks
 
 Check further down for keyboard shortcuts.
 
 ## Update (same command as installation)
 
 ```
-sudo bash -c "$(wget -nv -O - https://github.com/wiedehopf/tar1090/raw/master/install.sh)"
+sudo bash -c "$(wget -nv -O - https://github.com/FugginOld/adsb-map/raw/master/install.sh)"
 ```
 
 Configuration should be preserved.
 
-## Developing / Testing changes to tar1090
+## Developing / Testing changes to adsb-map
 
 - Clone the github repo
 - Make changes
@@ -58,13 +58,13 @@ Configuration should be preserved.
 
 Edit the configuration file to change the interval in seconds and number of history files saved:
 ```
-sudo nano /etc/default/tar1090
+sudo nano /etc/default/adsb-map
 ```
 Ctrl-x to exit, y (yes) and enter to save.
 
 Apply the configuration:
 ```
-sudo systemctl restart tar1090
+sudo systemctl restart adsb-map
 ```
 
 The duration of the history in seconds can be calculated as interval times history_size.
@@ -74,7 +74,7 @@ The duration of the history in seconds can be calculated as interval times histo
 Remove the // at the start of a line, otherwise the setting will not be used.
 
 ```
-sudo nano /usr/local/share/tar1090/html/js/config.js
+sudo nano /usr/local/share/adsb-map/html/js/config.js
 ```
 
 Ctrl-x to exit, y (yes) and enter to save.
@@ -82,7 +82,7 @@ Then Ctrl-F5 to refresh the web interface in the browser.
 
 If you somehow broke the interface or want the default config back:
 ```
-sudo rm /usr/local/share/tar1090/html/js/config.js
+sudo rm /usr/local/share/adsb-map/html/js/config.js
 ```
 Then run the install script again.
 
@@ -106,42 +106,42 @@ Documentation and explanation is time consuming to do and as such i choose to li
 
 If you think you have found a bug, open an issue here on github.
 Please check all the buttons and read all the tooltips before you do.
-Try deleting the browser cache for the tar1090 page.
+Try deleting the browser cache for the adsb-map page.
 
 
 ## Enable (/disable) FA links in the webinterface (previously enabled by default)
 
 ```
 # ENABLE:
-sudo sed -i -e 's?.*flightawareLinks.*?flightawareLinks = true;?' /usr/local/share/tar1090/html/js/config.js
+sudo sed -i -e 's?.*flightawareLinks.*?flightawareLinks = true;?' /usr/local/share/adsb-map/html/js/config.js
 # ENABLE if the above doesn't work (updated from previous version)
-echo 'flightawareLinks = true;' | sudo tee -a /usr/local/share/tar1090/html/js/config.js
+echo 'flightawareLinks = true;' | sudo tee -a /usr/local/share/adsb-map/html/js/config.js
 # DISABLE:
-sudo sed -i -e 's?.*flightawareLinks.*?flightawareLinks = false;?' /usr/local/share/tar1090/html/js/config.js
+sudo sed -i -e 's?.*flightawareLinks.*?flightawareLinks = false;?' /usr/local/share/adsb-map/html/js/config.js
 ```
 
 Then F5 to refresh the web interface in the browser.
 
-If your instance is not at /tar1090 you'll need to edit the config.js in the approppriate html folder, see "Multiple instances".
+If your instance is not at /adsb-map you'll need to edit the config.js in the approppriate html folder, see "Multiple instances".
 
-## Enable Share links to ADSB-X or other websites using tar1090
+## Enable Share links to ADSB-X or other websites using adsb-map
 ```
 # ENABLE:
-sudo sed -i -e 's?.*shareBaseUrl.*?shareBaseUrl  = "https://globe.adsbexchange.com/";?' /usr/local/share/tar1090/html/js/config.js
+sudo sed -i -e 's?.*shareBaseUrl.*?shareBaseUrl  = "https://globe.adsbexchange.com/";?' /usr/local/share/adsb-map/html/js/config.js
 # ENABLE if the above doesn't work (updated from previous version)
-echo 'shareBaseUrl  = "https://globe.adsbexchange.com/";' | sudo tee -a /usr/local/share/tar1090/html/js/config.js
+echo 'shareBaseUrl  = "https://globe.adsbexchange.com/";' | sudo tee -a /usr/local/share/adsb-map/html/js/config.js
 # DISABLE:
-sudo sed -i -e 's?.*shareBaseUrl.*?shareBaseUrl = false;?' /usr/local/share/tar1090/html/js/config.js
+sudo sed -i -e 's?.*shareBaseUrl.*?shareBaseUrl = false;?' /usr/local/share/adsb-map/html/js/config.js
 ```
 
-If your instance is not at /tar1090 you'll need to edit the config.js in the approppriate html folder, see "Multiple instances".
+If your instance is not at /adsb-map you'll need to edit the config.js in the approppriate html folder, see "Multiple instances".
 
 ## UAT receiver running dump978-fa and skyaware978:
 
 See the instructions for "Configuration part 1".
 This is the relevant part in the configuration file:
 ```
-# Change to yes to enable UAT/978 display in tar1090
+# Change to yes to enable UAT/978 display in adsb-map
 ENABLE_978=no
 # If running dump978-fa on another computer, modify the IP-address as appropriate.
 URL_978="http://127.0.0.1/skyaware978"
@@ -151,10 +151,10 @@ Follow the instructions in the file.
 
 ### UAT only configuration
 
-tar1090 running on the same pi as the skyaware978/dump978-fa:
+adsb-map running on the same pi as the skyaware978/dump978-fa:
 
 ```
-echo /run/skyaware978 tar1090 | sudo tee /etc/default/tar1090_instances
+echo /run/skyaware978 adsb-map | sudo tee /etc/default/adsb-map_instances
 ```
 
 After that run the install script and it should work.
@@ -165,14 +165,14 @@ UAT traffic will be displayed as ADS-B, this can't be avoided.
 
 
 ```
-wget -nv -O /tmp/install.sh https://github.com/wiedehopf/tar1090/raw/master/install.sh
+wget -nv -O /tmp/install.sh https://github.com/FugginOld/adsb-map/raw/master/install.sh
 sudo bash /tmp/install.sh /run/combine1090
 ```
 
 ## Remove / Uninstall
 
 ```
-sudo bash -c "$(wget -nv -O - https://github.com/wiedehopf/tar1090/raw/master/uninstall.sh)"
+sudo bash -c "$(wget -nv -O - https://github.com/FugginOld/adsb-map/raw/master/uninstall.sh)"
 ```
 
 ## Using the filters
@@ -220,18 +220,18 @@ Everything with 2 3 and 4 engines: .2.|.3.|.4.
 - T selects all aircraft
 - B toggle map brightness
 
-## URL query parameters (/tar1090/?icao=123456&zoom=5 and similar)
+## URL query parameters (/adsb-map/?icao=123456&zoom=5 and similar)
 
 See [README-query.md](README-query.md)
 
 ## Multiple instances
 
-The script can install multiple instances, this is accomplished by first editing `/etc/default/tar1090_instances`:
+The script can install multiple instances, this is accomplished by first editing `/etc/default/adsb-map_instances`:
 
 On each line there must be one instance.
 First on the line the source directory where the aircraft.json is located.
 Second on the line the name where you want to access the according website.
-(http://pi/tar1090 or http://pi/combo or http://pi/978 in this example)
+(http://pi/adsb-map or http://pi/combo or http://pi/978 in this example)
 
 If you want the instance at http://pi/, use webroot as a name.
 
@@ -239,7 +239,7 @@ The main instance needs to be included in this file.
 
 Example file:
 ```
-/run/dump1090-fa tar1090
+/run/dump1090-fa adsb-map
 /run/combine1090 combo
 /run/skyaware978 978
 /run/dump1090-fa webroot
@@ -250,61 +250,61 @@ all instances.
 
 Configuration for each instance will be separate, in the example the config files would be:
 ```
-/etc/default/tar1090
-/etc/default/tar1090-combo
-/etc/default/tar1090-978
-/etc/default/tar1090-webroot
+/etc/default/adsb-map
+/etc/default/adsb-map-combo
+/etc/default/adsb-map-978
+/etc/default/adsb-map-webroot
 ```
 
 The config.js will also have another path, to edit each config:
 ```
-sudo nano /usr/local/share/tar1090/html/js/config.js
-sudo nano /usr/local/share/tar1090/html-combo/js/config.js
-sudo nano /usr/local/share/tar1090/html-978/js/config.js
-sudo nano /usr/local/share/tar1090/html-webroot/js/config.js
+sudo nano /usr/local/share/adsb-map/html/js/config.js
+sudo nano /usr/local/share/adsb-map/html-combo/js/config.js
+sudo nano /usr/local/share/adsb-map/html-978/js/config.js
+sudo nano /usr/local/share/adsb-map/html-webroot/js/config.js
 ```
 
 HTML folders will be:
 ```
-/usr/local/share/tar1090/html
-/usr/local/share/tar1090/html-combo
-/usr/local/share/tar1090/html-978
-/usr/local/share/tar1090/html-webroot
+/usr/local/share/adsb-map/html
+/usr/local/share/adsb-map/html-combo
+/usr/local/share/adsb-map/html-978
+/usr/local/share/adsb-map/html-webroot
 ```
 
-The run folder and systemd service will be called tar1090-combo and tar1090-978
+The run folder and systemd service will be called adsb-map-combo and adsb-map-978
 in this example file.
 The main instance is the exception to that rule, having systemd service and run
-directory called just tar1090.
+directory called just adsb-map.
 
 ### Removing an instance
 
 For example removing the instance with the name combo and 978:
 
-First remove the corresponding line from `/etc/default/tar1090_instances` and
+First remove the corresponding line from `/etc/default/adsb-map_instances` and
 save the file so when you update it doesn't get installed again.
 
 Then run the following command adapted to your instance name, you'll need to
-include the tar1090- which is automatically added for the service names:
+include the adsb-map- which is automatically added for the service names:
 
 ```
-sudo bash /usr/local/share/tar1090/uninstall.sh tar1090-combo
-sudo bash /usr/local/share/tar1090/uninstall.sh tar1090-978
+sudo bash /usr/local/share/adsb-map/uninstall.sh adsb-map-combo
+sudo bash /usr/local/share/adsb-map/uninstall.sh adsb-map-978
 ```
 
-If the instance was installed with the old method without the tar1090_instances
-file, you'll have to try without the tar1090- before the combo, like this:
+If the instance was installed with the old method without the adsb-map_instances
+file, you'll have to try without the adsb-map- before the combo, like this:
 
 ```
-sudo bash /usr/local/share/tar1090/uninstall.sh combo
-sudo bash /usr/local/share/tar1090/uninstall.sh 978
+sudo bash /usr/local/share/adsb-map/uninstall.sh combo
+sudo bash /usr/local/share/adsb-map/uninstall.sh 978
 ```
 
 ## lighttpd
 
-tar1090 is now available at :8504 by default when using lighttpd. (port 8504)
+adsb-map is now available at :8504 by default when using lighttpd. (port 8504)
 
-To display tar1090 at /, add an instance as described above that has the name webroot.
+To display adsb-map at /, add an instance as described above that has the name webroot.
 It will be available at /
 
 
@@ -316,7 +316,7 @@ you can include.  The configuration needs to go into the appropriate server { }
 section.
 In the usual configuration that means to add this line:
 ```
-include /usr/local/share/tar1090/nginx-tar1090.conf;
+include /usr/local/share/adsb-map/nginx-adsb-map.conf;
 ```
 in the server { } section of either `/etc/nginx/sites-enabled/default` or `/etc/nginx/conf.d/default.conf` depending on your system configuration.
 Don't forget to restart the nginx service.
@@ -336,42 +336,42 @@ To judge the actual range (/?pTracks, see next chapter), one needs to first know
 - Those outlines tell you how far you can receive aircraft at the associated altitudes
 - The panorama does not take into account obstacles closer to the antenna than approximately 100 ft, trees are also not considered but can block reception
 
-#### 2: Integrate theoretical range outline into your local tar1090 display
-- For use on the tar1090 map the altitude will be set by changing the download URL
+#### 2: Integrate theoretical range outline into your local adsb-map display
+- For use on the adsb-map map the altitude will be set by changing the download URL
 - Near the top of the page, an URL for the panorama is mentioned.
 - Replace the XXXXXX in the following command with the ID contained in your panorama URL, then run the command on your pi:
 ```
-sudo /usr/local/share/tar1090/getupintheair.sh XXXXX
+sudo /usr/local/share/adsb-map/getupintheair.sh XXXXX
 ```
-- You should now have a range outline for the theoretical range for aircraft at 40000 ft on your tar1090 map
+- You should now have a range outline for the theoretical range for aircraft at 40000 ft on your adsb-map map
 
-- It might be interesting to compare to http://192.168.x.yy/tar1090/?pTracks which will by default will display the last 8 hours of traces.
+- It might be interesting to compare to http://192.168.x.yy/adsb-map/?pTracks which will by default will display the last 8 hours of traces.
 
 - More options for loading multiple outlines and for a different instance
 ```
 # load two outlines, 10000 ft and 40000 ft
-sudo /usr/local/share/tar1090/getupintheair.sh XXXXX 3048,12192
-# load a 10000 ft outline for the tar1090 instance located at /978
-sudo /usr/local/share/tar1090/getupintheair.sh XXXXX 3048 978
+sudo /usr/local/share/adsb-map/getupintheair.sh XXXXX 3048,12192
+# load a 10000 ft outline for the adsb-map instance located at /978
+sudo /usr/local/share/adsb-map/getupintheair.sh XXXXX 3048 978
 
-# load a 40000 ft outline for the tar1090 instance located at /adsbx
-sudo /usr/local/share/tar1090/getupintheair.sh XXXXX 12192 adsbx
+# load a 40000 ft outline for the adsb-map instance located at /adsbx
+sudo /usr/local/share/adsb-map/getupintheair.sh XXXXX 12192 adsbx
 ```
 
-## /tar1090/?pTracks
+## /adsb-map/?pTracks
 
-![Screenshot2](https://raw.githubusercontent.com/wiedehopf/tar1090/screenshots/screenshot4.png)
+![Screenshot2](https://raw.githubusercontent.com/FugginOld/adsb-map/screenshots/screenshot4.png)
 
-- Add /?pTracks to the usual /tar1090 URL, should look like this: http://192.168.x.yy/tar1090/?pTracks
+- Add /?pTracks to the usual /adsb-map URL, should look like this: http://192.168.x.yy/adsb-map/?pTracks
 - Shows the last 8 hours of traces you have seen, gives a nice visual representation of your coverage / range
 - Can be filtered by altitude with the altitude filter
 - Configure a longer duration than 8 hours via the [configuration](#configuration-part-1-history-interval-and-number-of-snapshots--ptracks-duration-optional)
-- Restrict the duration shown to 2 hours: /tar1090/?pTracks=2
-- Draw less points which reduces display time (higher interval, lower compute time, default 15): /tar1090/?pTracks=8&pTracksInterval=60
+- Restrict the duration shown to 2 hours: /adsb-map/?pTracks=2
+- Draw less points which reduces display time (higher interval, lower compute time, default 15): /adsb-map/?pTracks=8&pTracksInterval=60
 
 ## 0800-DESTROY-SD-CARD
 
-History function as used by several online aggregators using tar1090
+History function as used by several online aggregators using adsb-map
 (destroy sd-card is a bit of a joke but obviously it will use disk space and create quite a few files, they will be kept indefinitely so if the folder grows too big you'll have to delete old files yourself)
 
 The data is generated by my version of readsb so you'll have to run that:
@@ -389,15 +389,15 @@ Aggregators will generally use `--write-json-globe-index` as well but that's not
 
 You should also download
 ```
-wget -O /usr/local/share/tar1090/aircraft.csv.gz https://github.com/wiedehopf/tar1090-db/raw/csv/aircraft.csv.gz
+wget -O /usr/local/share/adsb-map/aircraft.csv.gz https://github.com/wiedehopf/tar1090-db/raw/csv/aircraft.csv.gz
 ```
 
 and add this command line option (for exaple via /etc/default/readsb):
 ```
---db-file /usr/local/share/tar1090/aircraft.csv.gz
+--db-file /usr/local/share/adsb-map/aircraft.csv.gz
 ```
 
-You will also need to point tar1090 to /run/readsb in case you are using another dump1090/readsb.
+You will also need to point adsb-map to /run/readsb in case you are using another dump1090/readsb.
 See the "multiple instances" readme section.
 
 If you don't want readsb to read data from the SDR, you'll also need to change the receiver options line to something like this:
@@ -408,37 +408,37 @@ If you have another dump1090/readsb running on the same machine, you'll also nee
 
 This will obviously write data to the hard drive, be aware of that.
 The data format is subject to change, don't expect this to be stable.
-Be aware of that when upgrading either tar1090 or readsb to a new commit.
+Be aware of that when upgrading either adsb-map or readsb to a new commit.
 
-If you're using --write-json-globe-index with tar1090, you might be interested in tar1090
+If you're using --write-json-globe-index with adsb-map, you might be interested in adsb-map
 using the readsb API to get data, it's less requests and usually more efficient,
 for details see the file deploy/nginx-readsb-api.conf
-(this needs adding to your existing nginx tar1090 configuration, this is only for people who really know their stuff anyway)
+(this needs adding to your existing nginx adsb-map configuration, this is only for people who really know their stuff anyway)
 
 ## A separate instance with longer data retention for gauging range
 
-If this seems too complicated for you or you don't want a 2nd instance, changing / adding PTRACKS=24 to the /etc/default/tar1090 configuration should also extend the history (for /?pTracks only).
+If this seems too complicated for you or you don't want a 2nd instance, changing / adding PTRACKS=24 to the /etc/default/adsb-map configuration should also extend the history (for /?pTracks only).
 
 ```
-sudo nano /etc/default/tar1090_instances
+sudo nano /etc/default/adsb-map_instances
 ```
 
 put in these two lines if you're using readsb
 ```
-/run/readsb tar1090
+/run/readsb adsb-map
 /run/readsb persist
 ```
 
 put in these two lines if you're using dump1090-fa
 ```
-/run/dump1090-fa tar1090
+/run/dump1090-fa adsb-map
 /run/dump1090-fa persist
 ```
 
-if you then run the tar1090 install script afterwards you'll have an extra instance you can configure the history retention for.
+if you then run the adsb-map install script afterwards you'll have an extra instance you can configure the history retention for.
 ```
-sudo bash -c "$(wget -nv -O - https://github.com/wiedehopf/tar1090/raw/master/install.sh)"
-sudo nano /etc/default/tar1090-persist
+sudo bash -c "$(wget -nv -O - https://github.com/FugginOld/adsb-map/raw/master/install.sh)"
+sudo nano /etc/default/adsb-map-persist
 ```
 
 change to these values for 24h of history:
@@ -452,18 +452,18 @@ HISTORY_SIZE=4300
 
 then
 ```
-sudo systemctl restart tar1090-persist
+sudo systemctl restart adsb-map-persist
 ```
 and the persist instance will start saving more data.
-You can then visit `/persist/?pTracks` instead of `/tar1090` to get the complete 24h history displayed.
+You can then visit `/persist/?pTracks` instead of `/adsb-map` to get the complete 24h history displayed.
 Press T to toggle the traces on and off, this is recommended for zooming and panning as with the traces showing this can be slow.
 
-(you can also look at /tar1090/?pTracks if you want to look only at the more recent tracks, interval / history can be configured in /etc/tar1090 for that instance)
+(you can also look at /adsb-map/?pTracks if you want to look only at the more recent tracks, interval / history can be configured in /etc/adsb-map for that instance)
 
 For adding the range outline to the /persist instance after having used the method described earlier, copy over the json:
 
 ```
-sudo cp /usr/local/share/tar1090/html/upintheair.json /usr/local/share/tar1090/html-persist
+sudo cp /usr/local/share/adsb-map/html/upintheair.json /usr/local/share/adsb-map/html-persist
 ```
 
 
@@ -480,7 +480,7 @@ Add readsb options:
 ## heatmap in conjunction with readsb wiedehopf fork --heatmap feature:
 
 ```
-/tar1090/?heatmap=200000
+/adsb-map/?heatmap=200000
 ```
 Maximum number of dots to draw is the number after heatmap.
 Optional arguments that can be added to the URL:
@@ -494,7 +494,7 @@ alternative display style: &realHeat
 - blurryness: &heatBlur=2
 - weight of each dot for the heatmap: &heatWeight=4
 
-## Notable websites related to tar1090 / readsb:
+## Notable websites related to adsb-map / readsb:
 
 One of this forks main uses is to be the frontend of a global map.
 For that purpose it's used in conjunction with readsb.
@@ -524,7 +524,7 @@ Notable Projects that use ADS-B data:
 
 ## Cloudflare
 
-When hosting a website with tar1090 via CF, CF needs to respect the various cache headers otherwise there will be caching issues.
+When hosting a website with adsb-map via CF, CF needs to respect the various cache headers otherwise there will be caching issues.
 Change Browser Cache TTL from the default of 4h to "Respect Existing Headers":
 Caching -> Configuration -> Browser Cache TTL -> Respect Existing Headers
 
@@ -538,7 +538,7 @@ This is the relevant part in the configuration file:
 ```
 You can remove the `//` to uncomment the line.
 
-Make sure that the server address is reachable from the device you are viewing the tar1090 page from (i.e. localhost / 127.0.0.1 will not work here unless you are viewing the tar1090 interface from the same machine you are running AIS-catcher - in all other cases it will need to be the local IP). If you run AIS-catcher and tar1090 on the same machine, you can use the host-relative magic token `HOSTNAME` to auto-populate the IP of the system - for example `http://HOSTNAME:8100`.
+Make sure that the server address is reachable from the device you are viewing the adsb-map page from (i.e. localhost / 127.0.0.1 will not work here unless you are viewing the adsb-map interface from the same machine you are running AIS-catcher - in all other cases it will need to be the local IP). If you run AIS-catcher and adsb-map on the same machine, you can use the host-relative magic token `HOSTNAME` to auto-populate the IP of the system - for example `http://HOSTNAME:8100`.
 
 **Note:** for this to work, you must have started AIS-catcher with the geojson flag set to on with the option `-N 8100 geojson on` and you should be able to see a geojson if you visit the `aiscatcher_server` address from above with `/geojson` appeanded to it - from the above example this would be `http://192.168.1.113:8100/geojson`
 

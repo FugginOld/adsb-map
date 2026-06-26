@@ -1,7 +1,7 @@
 {
   "name": "adsb-map",
   "version": "1.0.0",
-  "description": "![Screenshot1](https://raw.githubusercontent.com/wiedehopf/tar1090/screenshots/screenshot3.png)",
+  "description": "ADS-B plane tracking web interface",
   "main": "index.js",
   "directories": {
     "doc": "docs"

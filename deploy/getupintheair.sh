@@ -19,5 +19,5 @@ if [[ -n $3 ]]; then
 fi
 
 
-wget -nv -O "/usr/local/share/tar1090/html${instance}/upintheair.json" "http://www.heywhatsthat.com/api/upintheair.json?id=${ID}&refraction=0.25&alts=${ALTS}"
+wget -nv -O "/usr/local/share/adsb-map/html${instance}/upintheair.json" "http://www.heywhatsthat.com/api/upintheair.json?id=${ID}&refraction=0.25&alts=${ALTS}"
 
