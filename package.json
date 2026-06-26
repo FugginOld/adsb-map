@@ -1,0 +1,30 @@
+{
+  "name": "adsb-map",
+  "version": "1.0.0",
+  "description": "![Screenshot1](https://raw.githubusercontent.com/wiedehopf/tar1090/screenshots/screenshot3.png)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FugginOld/adsb-map.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/FugginOld/adsb-map/issues"
+  },
+  "homepage": "https://github.com/FugginOld/adsb-map#readme",
+  "devDependencies": {
+    "vite": "^8.1.0",
+    "vitest": "^4.1.9"
+  }
+}
