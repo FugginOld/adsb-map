@@ -3,6 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Vite build output
+html/adsb-bundle.js
+html/js/adsb-bundle.js
+node_modules/
+
 # User-specific files
 *.zip
 *.swp

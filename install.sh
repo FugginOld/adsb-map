@@ -229,8 +229,8 @@ fi
 
 
 # copy over base files
-cp install.sh uninstall.sh getupintheair.sh LICENSE README.md "$ipath"
-cp default "$ipath/example_config_dont_edit"
+cp install.sh uninstall.sh deploy/getupintheair.sh LICENSE README.md "$ipath"
+cp deploy/default "$ipath/example_config_dont_edit"
 cp html/js/config.js "$ipath/example_config.js"
 rm -f "$ipath/default"
 
@@ -238,7 +238,7 @@ rm -f "$ipath/default"
 {
     echo '# serve tar1090 directly on port 8504'
     echo '$SERVER["socket"] == ":8504" {'
-    cat 88-tar1090.conf
+    cat deploy/88-tar1090.conf
     echo '}'
 } > 95-tar1090-otherport.conf
 
@@ -267,35 +267,35 @@ do
     names+="$instance "
 
     # don't overwrite existing configuration
-    useSystemd && copyNoClobber default /etc/default/"$service"
+    useSystemd && copyNoClobber deploy/default /etc/default/"$service"
 
     sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
         -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" 95-tar1090-otherport.conf
 
     if [[ "$instance" == "webroot" ]]; then
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-            -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" 88-tar1090.conf
+            -e "s?/INSTANCE??g" -e "s?HTMLPATH?$html_path?g" deploy/88-tar1090.conf
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-            -e "s?/INSTANCE/?/?g" -e "s?HTMLPATH?$html_path?g" nginx.conf
-        sed -i -e "s?/INSTANCE?/?g" nginx.conf
+            -e "s?/INSTANCE/?/?g" -e "s?HTMLPATH?$html_path?g" deploy/nginx.conf
+        sed -i -e "s?/INSTANCE?/?g" deploy/nginx.conf
     else
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-            -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" 88-tar1090.conf
+            -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" deploy/88-tar1090.conf
         sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" \
-            -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" nginx.conf
+            -e "s?INSTANCE?$instance?g" -e "s?HTMLPATH?$html_path?g" deploy/nginx.conf
     fi
 
     if [[ $lighttpd == yes ]] && lighttpd -v | grep -E 'lighttpd/1.4.(5[6-9]|[6-9])' -qs; then
-        sed -i -e 's/compress.filetype/deflate.mimetypes/' 88-tar1090.conf
+        sed -i -e 's/compress.filetype/deflate.mimetypes/' deploy/88-tar1090.conf
         sed -i -e 's/compress.filetype/deflate.mimetypes/' 95-tar1090-otherport.conf
         if ! grep -qs -e '^[^#]*"mod_deflate"' /etc/lighttpd/lighttpd.conf /etc/lighttpd/conf-enabled/*; then
-            sed -i -e 's/^[^#]*deflate.mimetypes/#\0/' 88-tar1090.conf
+            sed -i -e 's/^[^#]*deflate.mimetypes/#\0/' deploy/88-tar1090.conf
             sed -i -e 's/^[^#]*deflate.mimetypes/#\0/' 95-tar1090-otherport.conf
         fi
     fi
 
 
-    sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" tar1090.service
+    sed -i.orig -e "s?SOURCE_DIR?$srcdir?g" -e "s?SERVICE?${service}?g" deploy/tar1090.service
 
     cp -r -T html "$TMP"
     cp -r -T "$gpath/git-db/db" "$TMP/db-$DB_VERSION"
@@ -341,14 +341,14 @@ do
 
     sed -i -e 's/id="webinterface_version">/\0'"(${TAR_VERSION})/" index.html
 
-    "$gpath/git/cachebust.sh" "$gpath/git/cachebust.list" "$TMP"
+    "$gpath/git/deploy/cachebust.sh" "$gpath/git/deploy/cachebust.list" "$TMP"
 
     rm -rf "$html_path"
     mv "$TMP" "$html_path"
 
     cd "$dir"
 
-    cp nginx.conf "$ipath/nginx-${service}.conf"
+    cp deploy/nginx.conf "$ipath/nginx-${service}.conf"
 
     if [[ $lighttpd == yes ]]; then
         # clean up broken symlinks in conf-enabled ...
@@ -365,10 +365,10 @@ do
             true
         elif [[ "$instance" == "webroot" ]]
         then
-            cp 88-tar1090.conf /etc/lighttpd/conf-available/99-"${service}".conf
+            cp deploy/88-tar1090.conf /etc/lighttpd/conf-available/99-"${service}".conf
             ln -f -s /etc/lighttpd/conf-available/99-"${service}".conf /etc/lighttpd/conf-enabled/99-"${service}".conf
         else
-            cp 88-tar1090.conf /etc/lighttpd/conf-available/88-"${service}".conf
+            cp deploy/88-tar1090.conf /etc/lighttpd/conf-available/88-"${service}".conf
             ln -f -s /etc/lighttpd/conf-available/88-"${service}".conf /etc/lighttpd/conf-enabled/88-"${service}".conf
             if [ -f /etc/lighttpd/conf.d/69-skybup.conf ]; then
                 mv /etc/lighttpd/conf-enabled/88-"${service}".conf /etc/lighttpd/conf-enabled/66-"${service}".conf
@@ -377,9 +377,9 @@ do
     fi
 
     if useSystemd; then
-        if [[ $changed == yes ]] || ! diff tar1090.service /lib/systemd/system/"${service}".service &>/dev/null
+        if [[ $changed == yes ]] || ! diff deploy/tar1090.service /lib/systemd/system/"${service}".service &>/dev/null
         then
-            cp tar1090.service /lib/systemd/system/"${service}".service
+            cp deploy/tar1090.service /lib/systemd/system/"${service}".service
             if systemctl enable "${service}"
             then
                 echo "Restarting ${service} ..."
@@ -391,10 +391,10 @@ do
     fi
 
     # restore sed modified configuration files
-    mv 88-tar1090.conf.orig 88-tar1090.conf
+    mv deploy/88-tar1090.conf.orig deploy/88-tar1090.conf
     mv 95-tar1090-otherport.conf.orig 95-tar1090-otherport.conf
-    mv nginx.conf.orig nginx.conf
-    mv tar1090.service.orig tar1090.service
+    mv deploy/nginx.conf.orig deploy/nginx.conf
+    mv deploy/tar1090.service.orig deploy/tar1090.service
 done < <(echo "$instances")
 
 if [[ $lighttpd == yes ]]; then
