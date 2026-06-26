@@ -9,7 +9,7 @@ export default defineConfig({
             name: '_adsbBundle',
             fileName: () => 'adsb-bundle.js',
         },
-        outDir: 'html',
+        outDir: 'html/js',
         emptyOutDir: false,
     },
     test: {

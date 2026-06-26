@@ -448,7 +448,7 @@ if (g.jWorkers) {
     g.jsonGetId = 0;
 
     for (let i = 0; i < g.jWorkers; i++) {
-        const worker = new Worker("jsonWorker.js");
+        const worker = new Worker("js/jsonWorker.js");
         g.jsonWorker.push(worker);
         worker.onmessage = handleJsonWorker;
     }
