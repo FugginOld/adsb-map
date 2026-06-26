@@ -303,7 +303,7 @@ do
     echo "{ \"tar1090Version\": \"$TAR_VERSION\", \"databaseVersion\": \"$DB_VERSION\" }" > "$TMP/version.json"
 
     # keep some stuff around
-    mv "$html_path/config.js" "$TMP/config.js" 2>/dev/null || true
+    mv "$html_path/js/config.js" "$TMP/js/config.js" 2>/dev/null || true
     mv "$html_path/upintheair.json" "$TMP/upintheair.json" 2>/dev/null || true
 
     # in case we have offlinemaps installed, modify config.js
@@ -318,17 +318,17 @@ do
         fi
     done
     if [[ -n "$MAX_OFFLINE" ]]; then
-        if ! grep "$TMP/config.js" -E -e '^offlineMapDetail\s*=.*' -qs; then
-            echo "offlineMapDetail=$MAX_OFFLINE;" >> "$TMP/config.js"
+        if ! grep "$TMP/js/config.js" -E -e '^offlineMapDetail\s*=.*' -qs; then
+            echo "offlineMapDetail=$MAX_OFFLINE;" >> "$TMP/js/config.js"
         else
-            sed -i -e "s/^offlineMapDetail\s*=.*/offlineMapDetail=$MAX_OFFLINE;/" "$TMP/config.js"
+            sed -i -e "s/^offlineMapDetail\s*=.*/offlineMapDetail=$MAX_OFFLINE;/" "$TMP/js/config.js"
         fi
     fi
     if [[ -n "$MAX_OFFLINE_OFM" ]]; then
-        if ! grep "$TMP/config.js" -E -e '^offlineMapDetailOFM\s*=.*' -qs; then
-            echo "offlineMapDetailOFM=$MAX_OFFLINE_OFM;" >> "$TMP/config.js"
+        if ! grep "$TMP/js/config.js" -E -e '^offlineMapDetailOFM\s*=.*' -qs; then
+            echo "offlineMapDetailOFM=$MAX_OFFLINE_OFM;" >> "$TMP/js/config.js"
         else
-            sed -i -e "s/^offlineMapDetailOFM\s=.*/offlineMapDetailOFM=$MAX_OFFLINE_OFM;/" "$TMP/config.js"
+            sed -i -e "s/^offlineMapDetailOFM\s=.*/offlineMapDetailOFM=$MAX_OFFLINE_OFM;/" "$TMP/js/config.js"
         fi
     fi
 

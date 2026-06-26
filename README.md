@@ -47,7 +47,7 @@ sudo bash -c "$(wget -nv -O - https://github.com/wiedehopf/tar1090/raw/master/in
 
 Configuration should be preserved.
 
-## Developting / Testing changes to tar1090
+## Developing / Testing changes to tar1090
 
 - Clone the github repo
 - Make changes
@@ -74,7 +74,7 @@ The duration of the history in seconds can be calculated as interval times histo
 Remove the // at the start of a line, otherwise the setting will not be used.
 
 ```
-sudo nano /usr/local/share/tar1090/html/config.js
+sudo nano /usr/local/share/tar1090/html/js/config.js
 ```
 
 Ctrl-x to exit, y (yes) and enter to save.
@@ -82,7 +82,7 @@ Then Ctrl-F5 to refresh the web interface in the browser.
 
 If you somehow broke the interface or want the default config back:
 ```
-sudo rm /usr/local/share/tar1090/html/config.js
+sudo rm /usr/local/share/tar1090/html/js/config.js
 ```
 Then run the install script again.
 
@@ -113,11 +113,11 @@ Try deleting the browser cache for the tar1090 page.
 
 ```
 # ENABLE:
-sudo sed -i -e 's?.*flightawareLinks.*?flightawareLinks = true;?' /usr/local/share/tar1090/html/config.js
+sudo sed -i -e 's?.*flightawareLinks.*?flightawareLinks = true;?' /usr/local/share/tar1090/html/js/config.js
 # ENABLE if the above doesn't work (updated from previous version)
-echo 'flightawareLinks = true;' | sudo tee -a /usr/local/share/tar1090/html/config.js
+echo 'flightawareLinks = true;' | sudo tee -a /usr/local/share/tar1090/html/js/config.js
 # DISABLE:
-sudo sed -i -e 's?.*flightawareLinks.*?flightawareLinks = false;?' /usr/local/share/tar1090/html/config.js
+sudo sed -i -e 's?.*flightawareLinks.*?flightawareLinks = false;?' /usr/local/share/tar1090/html/js/config.js
 ```
 
 Then F5 to refresh the web interface in the browser.
@@ -127,11 +127,11 @@ If your instance is not at /tar1090 you'll need to edit the config.js in the app
 ## Enable Share links to ADSB-X or other websites using tar1090
 ```
 # ENABLE:
-sudo sed -i -e 's?.*shareBaseUrl.*?shareBaseUrl  = "https://globe.adsbexchange.com/";?' /usr/local/share/tar1090/html/config.js
+sudo sed -i -e 's?.*shareBaseUrl.*?shareBaseUrl  = "https://globe.adsbexchange.com/";?' /usr/local/share/tar1090/html/js/config.js
 # ENABLE if the above doesn't work (updated from previous version)
-echo 'shareBaseUrl  = "https://globe.adsbexchange.com/";' | sudo tee -a /usr/local/share/tar1090/html/config.js
+echo 'shareBaseUrl  = "https://globe.adsbexchange.com/";' | sudo tee -a /usr/local/share/tar1090/html/js/config.js
 # DISABLE:
-sudo sed -i -e 's?.*shareBaseUrl.*?shareBaseUrl = false;?' /usr/local/share/tar1090/html/config.js
+sudo sed -i -e 's?.*shareBaseUrl.*?shareBaseUrl = false;?' /usr/local/share/tar1090/html/js/config.js
 ```
 
 If your instance is not at /tar1090 you'll need to edit the config.js in the approppriate html folder, see "Multiple instances".
@@ -258,10 +258,10 @@ Configuration for each instance will be separate, in the example the config file
 
 The config.js will also have another path, to edit each config:
 ```
-sudo nano /usr/local/share/tar1090/html/config.js
-sudo nano /usr/local/share/tar1090/html-combo/config.js
-sudo nano /usr/local/share/tar1090/html-978/config.js
-sudo nano /usr/local/share/tar1090/html-webroot/config.js
+sudo nano /usr/local/share/tar1090/html/js/config.js
+sudo nano /usr/local/share/tar1090/html-combo/js/config.js
+sudo nano /usr/local/share/tar1090/html-978/js/config.js
+sudo nano /usr/local/share/tar1090/html-webroot/js/config.js
 ```
 
 HTML folders will be:
@@ -412,7 +412,7 @@ Be aware of that when upgrading either tar1090 or readsb to a new commit.
 
 If you're using --write-json-globe-index with tar1090, you might be interested in tar1090
 using the readsb API to get data, it's less requests and usually more efficient,
-for details see the file nginx-readsb-api.conf
+for details see the file deploy/nginx-readsb-api.conf
 (this needs adding to your existing nginx tar1090 configuration, this is only for people who really know their stuff anyway)
 
 ## A separate instance with longer data retention for gauging range

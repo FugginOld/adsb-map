@@ -10,4 +10,4 @@ All five canonical labels use default strings. See `docs/agents/triage-labels.md
 
 ### Domain docs
 
-Single-context repo — one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+Docs live in `docs/`. Agent guidelines are in `docs/agents/`. See `docs/agents/domain.md`.
