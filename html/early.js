@@ -5,9 +5,9 @@ console.time("Page Load");
 
 // TAR1090 application object
 let TAR;
-TAR = (function (global, jQuery, TAR) {
+TAR = (function (global, TAR) {
     return TAR;
-}(window, jQuery, TAR || {}));
+}(window, TAR || {}));
 
 // global object to store big stuff ... avoid clojur stupidity keeping the reference to big objects
 let g = {};
@@ -27,10 +27,39 @@ let chunkNames = [];
 let PositionHistoryBuffer;
 var receiverJson;
 let deferHistory;
-let historyLoaded = jQuery.Deferred();
-let zstdDefer = jQuery.Deferred();
-let configureReceiver = jQuery.Deferred();
-let historyQueued = jQuery.Deferred();
+
+function Deferred() {
+    let _res, _rej;
+    const p = new Promise((res, rej) => { _res = res; _rej = rej; });
+    p.resolve = (v) => { _res(v); return p; };
+    p.reject  = (v) => { _rej(v);  return p; };
+    p.done    = (fn) => { p.then(fn);    return p; };
+    p.fail    = (fn) => { p.catch(fn);   return p; };
+    p.always  = (fn) => { p.finally(fn); return p; };
+    p.promise = () => p;
+    return p;
+}
+function toDeferred(promise) {
+    promise.done   = (fn) => { promise.then(fn);    return promise; };
+    promise.fail   = (fn) => { promise.catch(fn);   return promise; };
+    promise.always = (fn) => { promise.finally(fn); return promise; };
+    return promise;
+}
+function _fetchNetErr(e) { if (!e.status) { e.status = 0; e.readyState = 0; } throw e; }
+function fetchJson(url, opts) {
+    return fetch(url, opts).catch(_fetchNetErr).then(function(r) { if (!r.ok) { const e = new Error(r.status); e.status = r.status; e.readyState = 4; throw e; } return r.json(); });
+}
+function fetchBuf(url, opts) {
+    return fetch(url, opts).catch(_fetchNetErr).then(function(r) { if (!r.ok) { const e = new Error(r.status); e.status = r.status; e.readyState = 4; throw e; } return r.arrayBuffer(); });
+}
+function fetchText(url, opts) {
+    return fetch(url, opts).catch(_fetchNetErr).then(function(r) { if (!r.ok) { const e = new Error(r.status); e.status = r.status; e.readyState = 4; throw e; } return r.text(); });
+}
+
+let historyLoaded = Deferred();
+let zstdDefer = Deferred();
+let configureReceiver = Deferred();
+let historyQueued = Deferred();
 let historyTimeout = 60;
 let haveTraces = false;
 let globeIndex = 0;
@@ -43,7 +72,7 @@ let dbServer = false;
 let l3harris = false;
 let heatmap = false;
 let heatLoaded = 0;
-let heatmapDefer = jQuery.Deferred();
+let heatmapDefer = Deferred();
 let heatChunks = [];
 let heatPoints = [];
 let replay = false;
@@ -200,8 +229,8 @@ if (usp.has('showerrors') || usp.has('jse')) {
             splat += msg + '\n';
             if (error && error.stack)
                 splat += '\n' + error.stack;
-            jQuery("#js_error").text(splat);
-            jQuery("#js_error").css('display','block');
+            document.getElementById('js_error').textContent = splat;
+            document.getElementById('js_error').style.display = 'block';
         }
         return false;
     }
@@ -277,11 +306,6 @@ if (usp.has('l3harris') || usp.has('ift')) {
 }
 if (usp.has('r') || usp.has('replay')) {
     replay = true;
-}
-function arraybufferRequest() {
-    let xhrOverride = new XMLHttpRequest();
-    xhrOverride.responseType = 'arraybuffer';
-    return xhrOverride;
 }
 
 if (usp.has('heatmap') || usp.has('realHeat')) {
@@ -394,12 +418,7 @@ function lDateString(date) {
 }
 
 function chunksDefer() {
-    return jQuery.ajax({
-        url:'chunks/chunks.json',
-        cache: false,
-        dataType: 'json',
-        timeout: 4000,
-    });
+    return toDeferred(fetchJson('chunks/chunks.json', {cache: 'no-store'}));
 }
 
 function handleJsonWorker(e) {
@@ -412,7 +431,7 @@ function handleJsonWorker(e) {
 };
 
 function jsonGetWorker(url) {
-    const defer = jQuery.Deferred();
+    const defer = Deferred();
     g.jwr[url] = defer;
     const wid = g.jsonGetId++ % g.jsonWorker.length;
     //console.log(`using worker ${wid}`);
@@ -421,7 +440,7 @@ function jsonGetWorker(url) {
     return defer;
 }
 
-g.jWorkers = 0;
+g.jWorkers = 2;
 if (g.jWorkers) {
     g.jwr = {};
 
@@ -444,21 +463,16 @@ if (uuid) {
 } else if (aggregator) {
     console.log("Using aggregator fast-path load!");
     let data = {"zstd":true,"reapi":true,"refresh":1000,"history":1,"dbServer":true,"binCraft":true,"globeIndexGrid":3,"globeIndexSpecialTiles":[],"version":"aggregator backend"};
-    get_receiver_defer = jQuery.Deferred().resolve(data);
-    test_chunk_defer = jQuery.Deferred().reject();
+    get_receiver_defer = Deferred().resolve(data);
+    test_chunk_defer = Deferred().reject();
 } else {
     // get configuration json files, will be used in initialize function
 
-    {get_receiver_defer = jQuery.ajax({
-        url: 'data/receiver.json',
-        cache: false,
-        dataType: 'json',
-        timeout: 10000,
-    });}
-    {test_chunk_defer = chunksDefer();}
+    get_receiver_defer = toDeferred(fetchJson('data/receiver.json', {cache: 'no-store'}));
+    test_chunk_defer = chunksDefer();
 }
 
-{jQuery.getJSON(databaseFolder + "/ranges.js").done(function(ranges) {
+fetchJson(databaseFolder + "/ranges.js").then(function(ranges) {
     if (!ranges || !ranges.military) {
         console.error("couldn't load milRanges.");
         return;
@@ -471,7 +485,7 @@ if (uuid) {
             continue;
         milRanges.push([a, b]);
     }
-});}
+}).catch(function() {});
 
 
 let heatmapLoadingState = {};
@@ -490,26 +504,22 @@ function loadHeatChunk() {
 
     let URL = base + sDate + "/heatmap/" +
         index.toString().padStart(2, '0') + ".bin.ttf";
-    let req = jQuery.ajax({
-        url: URL,
-        method: 'GET',
-        num: heatmapLoadingState.index,
-        xhr: arraybufferRequest,
-    });
+    const capturedIndex = heatmapLoadingState.index;
     heatmapLoadingState.index++;
 
     const sliceEnd = new Date(time.getTime() + (30 * 60 - 1) * 1000);
     console.log(zDateString(time) + ' ' + zuluTime(time) + ' - ' + zuluTime(sliceEnd) + ' ' + URL);
 
-    {req.done(function (responseData) {
+    const req = toDeferred(fetchBuf(URL));
+    req.done(function(responseData) {
         heatmapLoadingState.completed++;
-        jQuery("#loader_progress").attr('value', heatmapLoadingState.completed);
-        heatChunks[this.num] = responseData;
+        document.getElementById('loader_progress').value = heatmapLoadingState.completed;
+        heatChunks[capturedIndex] = responseData;
         loadHeatChunk();
-    });}
-    {req.fail(function(jqxhr, status, error) {
+    });
+    req.fail(function() {
         loadHeatChunk();
-    });}
+    });
 }
 
 if (!heatmap) {
@@ -530,8 +540,8 @@ if (!heatmap) {
     heatmapLoadingState.start = start;
 
     heatmapLoadingState.completed = 0;
-    jQuery("#loader_progress").attr('value', heatmapLoadingState.completed);
-    jQuery("#loader_progress").attr('max', numChunks);
+    document.getElementById('loader_progress').value = heatmapLoadingState.completed;
+    document.getElementById('loader_progress').max = numChunks;
 
     // 2 async chains of heat chunk loading:
     loadHeatChunk();
@@ -550,9 +560,9 @@ if (uuid != null) {
     get_receiver_defer.fail(function(data){
 
         setTimeout(function() {
-            jQuery("#loader").addClass("hidden");
-            jQuery("#update_error_detail").text("Seems the decoder / receiver / backend isn't working correctly!");
-            jQuery("#update_error").css('display','block');
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('update_error_detail').textContent = "Seems the decoder / receiver / backend isn't working correctly!";
+            document.getElementById('update_error').style.display = 'block';
         }, 2000);
 
         setTimeout(function() {
@@ -575,9 +585,9 @@ if (uuid != null) {
         haveTraces = Boolean(data.haveTraces || data.globeIndexGrid);
 
         if (data.readsb) {
-            jQuery("#decoder_pre").text("decoder:");
-            jQuery("#decoder_link").text("readsb");
-            jQuery("#decoder_link").attr("href", "https://github.com/wiedehopf/readsb#readsb");
+            document.getElementById('decoder_pre').textContent = "decoder:";
+            document.getElementById('decoder_link').textContent = "readsb";
+            document.getElementById('decoder_link').href = "https://github.com/wiedehopf/readsb#readsb";
         }
 
         if (heatmap || replay || filterUuid) {
@@ -630,9 +640,7 @@ if (uuid != null) {
 function get_history() {
     if (!loadFinished) {
         if (!globeIndex && !uuid) {
-            let request = jQuery.ajax({ url: 'upintheair.json',
-                cache: true,
-                dataType: 'json' });
+            const request = toDeferred(fetchJson('upintheair.json'));
             request.done(function(data) {
                 calcOutlineData = data;
             });
@@ -648,21 +656,15 @@ function get_history() {
     HistoryItemsLoaded = 0;
 
     if (nHistoryItems > 0) {
-        jQuery("#loader_progress").attr('max',nHistoryItems + 1);
+        document.getElementById('loader_progress').max = nHistoryItems + 1;
         console.time("Downloaded History");
 
         nHistoryItems++;
-        let request = jQuery.ajax({ url: 'data/aircraft.json',
-            timeout: historyTimeout*800,
-            cache: false,
-            dataType: 'json' });
+        let request = toDeferred(fetchJson('data/aircraft.json', {cache: 'no-store'}));
         deferHistory.push(request);
         if (enable_uat) {
             nHistoryItems++;
-            request = jQuery.ajax({ url: 'chunks/978.json',
-                timeout: historyTimeout*800,
-                cache: false,
-                dataType: 'json' });
+            request = toDeferred(fetchJson('chunks/978.json', {cache: 'no-store'}));
             deferHistory.push(request);
         }
 
@@ -691,25 +693,18 @@ function get_history_item(i) {
         if (g.jWorkers) {
             request = jsonGetWorker(url);
         } else {
-            request = jQuery.ajax({ url: url,
-                timeout: historyTimeout * 1000,
-                dataType: 'json'
-            });
+            request = toDeferred(fetchJson(url));
         }
     } else {
-
-        request = jQuery.ajax({ url: 'data/history_' + i + '.json',
-            timeout: nHistoryItems * 80, // Allow 40 ms load time per history entry
-            cache: false,
-            dataType: 'json' });
+        request = toDeferred(fetchJson('data/history_' + i + '.json', {cache: 'no-store'}));
     }
 
     request
         .done(function(json) {
-            jQuery("#loader_progress").attr('value',++HistoryItemsLoaded);
+            document.getElementById('loader_progress').value = ++HistoryItemsLoaded;
         })
-        .fail(function(jqxhr, status, error) {
-            jQuery("#loader_progress").attr('value',++HistoryItemsLoaded);
+        .fail(function() {
+            document.getElementById('loader_progress').value = ++HistoryItemsLoaded;
         });
 
     deferHistory.push(request);
@@ -752,15 +747,15 @@ function Toggle(arg) {
 
 Toggle.prototype.init = function() {
     if (this.container) {
-        jQuery(this.container).append((
+        document.querySelector(this.container).insertAdjacentHTML('beforeend',
             '<div class="settingsOptionContainer">'
             + '<div class="settingsCheckbox" id="' + this.key + '_cb' + '"></div>'
             + '<div class="settingsText">' + this.display + '</div>'
-            + '</div>'));
+            + '</div>');
     }
 
     if (this.button) {
-        jQuery(this.button).on('click', () => {this.toggle()});
+        document.querySelector(this.button).addEventListener('click', () => {this.toggle()});
     }
 
     if (loStore[this.key] == 'true')
@@ -787,11 +782,7 @@ Toggle.prototype.toggle = function(override, init) {
     }
 
     if (this.checkbox) {
-        if (this.state == false) {
-            jQuery(this.checkbox).removeClass('settingsCheckboxChecked');
-        } else {
-            jQuery(this.checkbox).addClass('settingsCheckboxChecked');
-        }
+        document.querySelector(this.checkbox).classList.toggle('settingsCheckboxChecked', this.state !== false);
     }
 
     if (!init)
@@ -805,7 +796,7 @@ Toggle.prototype.restore = function () {
 
 Toggle.prototype.hideCheckbox = function () {
     if (this.checkbox)
-        jQuery(this.checkbox).parent().hide();
+        document.querySelector(this.checkbox).parentElement.style.display = 'none';
 }
 
 // From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
@@ -889,8 +880,8 @@ function webAssemblyFail(e) {
     if (0 && aggregator && !uuid) {
         inhibitFetch = true;
         reApi = false;
-        jQuery("#generic_error_detail").text("Your browser is not supporting webassembly, this website does not work without webassembly.");
-        jQuery("#generic_error").css('display','block');
+        document.getElementById('generic_error_detail').textContent = "Your browser is not supporting webassembly, this website does not work without webassembly.";
+        document.getElementById('generic_error').style.display = 'block';
     }
     if (e) {
         console.log(e);

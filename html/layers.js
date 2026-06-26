@@ -22,7 +22,7 @@ function createBaseLayers() {
     let us = new ol.Collection();
     let europe = new ol.Collection();
 
-    const tileTransition = onMobile ? 0 : 0;
+    const tileTransition = onMobile ? 0 : 250;
 
     if (loStore['customTiles'] != undefined) {
         custom_layers.push(new ol.layer.Tile({
@@ -302,14 +302,9 @@ function createBaseLayers() {
             renderMode: 'image',
         });
 
-        jQuery.ajax({
-            url: 'osm-liberty/style.json',
-            dataType: 'json',
-            layer: vtlayer,
-            cache: false,
-        }).done(function(glStyle) {
-            ol.mbApplyStyle(this.layer, glStyle, 'openmaptiles');
-        });
+        fetchJson('osm-liberty/style.json', {cache: 'no-store'}).then(function(glStyle) {
+            ol.mbApplyStyle(vtlayer, glStyle, 'openmaptiles');
+        }).catch(function() {});
 
         world.push(vtlayer);
     }

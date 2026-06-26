@@ -1408,15 +1408,15 @@ function iconTest() {
     if (usp.has('iconTestLabels')) {
         labels = true;
     }
-    jQuery('#large_mode_control').hide();
-    jQuery('#header_top').hide();
-    jQuery('#header_side').hide();
-    jQuery('#splitter').hide();
-    jQuery('#tabs').hide();
-    jQuery('#filterButton').hide();
-    jQuery('.ol-control').hide();
-    jQuery('.ol-attribution').show();
-    jQuery("#loader").addClass("hidden");
+    document.getElementById('large_mode_control').style.display = 'none';
+    document.getElementById('header_top').style.display = 'none';
+    document.getElementById('header_side').style.display = 'none';
+    document.getElementById('splitter').style.display = 'none';
+    document.getElementById('tabs').style.display = 'none';
+    document.getElementById('filterButton').style.display = 'none';
+    document.querySelectorAll('.ol-control').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.ol-attribution').forEach(el => el.style.display = '');
+    document.getElementById('loader').classList.add('hidden');
 
     let mapdiv = document.getElementById('iconTestCanvas');
     console.log(mapdiv);

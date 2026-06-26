@@ -18,6 +18,8 @@ function PlaneObject(icao) {
     // most properties are set via this function so they can be reset easily
     this.setNull();
 
+    this._model = new PlaneModel(this.icao);
+
     // Track history as a series of line segments
     this.elastic_feature = null;
     this.track_linesegs = [];
@@ -937,7 +939,7 @@ PlaneObject.prototype.updateIcon = function() {
 
             addToIconCache.push([svgKey, null, svgURI]);
 
-            if (true || TrackedAircraftPositions < 200) {
+            if (TrackedAircraftPositions < 200) {
                 this.markerIcon = new ol.style.Icon({
                     scale: this.scale,
                     imgSize: [this.shape.w, this.shape.h],
@@ -1388,26 +1390,23 @@ PlaneObject.prototype.updateData = function(now, last, data, init) {
 
     this.last_info_server = now;
 
-    let isArray = Array.isArray(data);
-    // [.hex, .alt_baro, .gs, .track, .lat, .lon, .seen_pos, "mlat"/"tisb"/.type , .flight, .messages]
-    //    0      1        2     3       4     5     6                 7               8        9
-    // this format is only valid for chunk loading the history
-    const alt_baro = isArray? data[1] : data.alt_baro;
-    let gs = isArray? data[2] : data.gs;
-    const track = isArray? data[3] : data.track;
-    const lat = isArray? data[4] : data.lat;
-    const lon = isArray? data[5] : data.lon;
-    let seen = isArray? data[6] : data.seen;
-    let seen_pos = isArray? data[6] : data.seen_pos;
+    const alt_baro = data.alt_baro;
+    let gs = data.gs;
+    const track = data.track;
+    const lat = data.lat;
+    const lon = data.lon;
+    let seen = data.seen;
+    let seen_pos = data.seen_pos;
     seen = (seen == null) ? 5 : seen;
     seen_pos = (seen_pos == null && lat) ? 5 : seen_pos;
-    let type = isArray? data[7] : data.type;
-    if (!isArray && data.mlat != null && data.mlat.indexOf("lat") >= 0) type = 'mlat';
+    let type = data.type;
+    if (data.mlat != null && data.mlat.indexOf("lat") >= 0) type = 'mlat';
     const mlat = (type == 'mlat');
     const tisb = (type && type.substring(0,4) == "tisb");
-    const flight = isArray? data[8] : data.flight;
+    const flight = data.flight;
 
     this.last_message_time = now - seen;
+    this._model.updateData({ lat, lon, alt_baro, gs, track, flight, type, seen, seen_pos });
 
     // remember last known position even if stale
     // do not show or process mlat positions when filtered out.
@@ -1517,12 +1516,6 @@ PlaneObject.prototype.updateData = function(now, last, data, init) {
         this.dataSource = "unknown";
     } else if (type == 'ais') {
         this.dataSource = "ais";
-    }
-
-    if (isArray) {
-        this.messages = data[9];
-        this.updatePositionData(now, last, data, init);
-        return;
     }
 
     // Update all of our data
@@ -3065,46 +3058,45 @@ function routeDoLookup() {
         console.log(`${currentTime}: requesting routes:`, requestBody);
     }
 
-    jQuery.ajax({
-        type: "POST",
-        url: routeApiUrl,
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        data: requestBody,
-    })
-        .done((routes) => {
-            const currentTime = Date.now()/1000;
-            g.route_check_in_flight = false;
-            if (debugRoute) {
-                console.log(`${currentTime}: got routes:`, routes);
+    fetch(routeApiUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
+        body: requestBody,
+    }).then(function(r) {
+        if (!r.ok) { const e = new Error(r.status); e.status = r.status; throw e; }
+        return r.json();
+    }).then((routes) => {
+        const currentTime = Date.now()/1000;
+        g.route_check_in_flight = false;
+        if (debugRoute) {
+            console.log(`${currentTime}: got routes:`, routes);
+        }
+        for (let i in routes) {
+            const route = routes[i];
+            if (!route) {
+                console.log(`Route API returned this invalid element: ${String(route)}, probably for`, g.route_check_checking[i]);
+                continue;
             }
-            for (let i in routes) {
-                const route = routes[i];
-                if (!route) {
-                    console.log(`Route API returned this invalid element: ${String(route)}, probably for`, g.route_check_checking[i]);
-                    continue;
-                }
-                route.tarNextUpdate = currentTime + 6 * 3600; // recheck in 6 hours
-                g.route_cache[route.callsign] = route;
+            route.tarNextUpdate = currentTime + 6 * 3600; // recheck in 6 hours
+            g.route_cache[route.callsign] = route;
+        }
+        for (const entry of g.route_check_checking) {
+            delete g.route_check_todo[entry.callsign];
+            const cached = g.route_cache[entry.callsign];
+            if (!cached || currentTime > cached.tarNextUpdate) {
+                g.route_cache[entry.callsign] = { tarNextUpdate: Math.ceil(currentTime / 30) * 30 };
             }
-            for (const entry of g.route_check_checking) {
-                delete g.route_check_todo[entry.callsign];
-                const cached = g.route_cache[entry.callsign];
-                if (!cached || currentTime > cached.tarNextUpdate) {
-                    g.route_cache[entry.callsign] = { tarNextUpdate: Math.ceil(currentTime / 30) * 30 };
-                }
-                const plane = g.planes[entry.icao];
-                plane && plane.dataChanged();
-            }
-            // let's update the route data immediately by refreshing the interface
-            refresh();
-            g.route_check_checking = null;
-        })
-        .fail((jqxhr, status, error) => {
-            g.route_check_in_flight = false;
-            g.route_next_lookup =  Date.now()/1000 + 15;
-            console.log('route API request error, delaying next request by 15 seconds.');
-        });
+            const plane = g.planes[entry.icao];
+            plane && plane.dataChanged();
+        }
+        // let's update the route data immediately by refreshing the interface
+        refresh();
+        g.route_check_checking = null;
+    }).catch(() => {
+        g.route_check_in_flight = false;
+        g.route_next_lookup = Date.now()/1000 + 15;
+        console.log('route API request error, delaying next request by 15 seconds.');
+    });
 }
 
 PlaneObject.prototype.setFlight = function(flight) {
