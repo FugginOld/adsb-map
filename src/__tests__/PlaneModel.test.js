@@ -117,4 +117,30 @@ describe('PlaneModel constructor', () => {
         const plane = new PlaneModel('a1b2c3');
         expect(plane.seen).toBeNull();
     });
+
+    it('initializes visible to true', () => {
+        const plane = new PlaneModel('a1b2c3');
+        expect(plane.visible).toBe(true);
+    });
+
+    it('initializes selected to false', () => {
+        const plane = new PlaneModel('a1b2c3');
+        expect(plane.selected).toBe(false);
+    });
+});
+
+describe('PlaneModel.setNull() — display state', () => {
+    it('resets visible to true on a new flight leg', () => {
+        const plane = new PlaneModel('a1b2c3');
+        plane.visible = false;
+        plane.setNull();
+        expect(plane.visible).toBe(true);
+    });
+
+    it('preserves selected across flight legs', () => {
+        const plane = new PlaneModel('a1b2c3');
+        plane.selected = true;
+        plane.setNull();
+        expect(plane.selected).toBe(true);
+    });
 });

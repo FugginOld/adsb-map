@@ -8,9 +8,10 @@ export class PlaneRenderer {
     }
 
     sync() {
-        if (this._model.lat != null && this._model.lon != null) {
+        if (this._model.visible && this._model.lat != null && this._model.lon != null) {
             this._feature.geometry = this._createPoint(this._model.lon, this._model.lat);
         }
+        this._feature.selected = this._model.selected;
     }
 
     remove() {

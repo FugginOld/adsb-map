@@ -32,10 +32,13 @@ beforeAll(() => {
     );
     vm.runInContext(src, ctx);
 
-    // Stub side-effectful methods so construction doesn't trigger network calls
+    // Stub side-effectful methods so construction and updateData don't trigger network calls or DOM access
     ctx.PlaneObject.prototype.checkForDB = function() {};
     ctx.PlaneObject.prototype.dataChanged = function() {};
     ctx.PlaneObject.prototype.getAircraftData = function() {};
+    ctx.PlaneObject.prototype.updateAlt = function() {};
+    ctx.PlaneObject.prototype.setTypeFlagsReg = function() {};
+    ctx.PlaneObject.prototype.setFlight = function() {};
 
     PlaneObject = ctx.PlaneObject;
 });
@@ -86,5 +89,43 @@ describe('PlaneObject.setNull() → _model delegation', () => {
 
         expect(plane._model.gs).toBeNull();
         expect(plane._model.track).toBeNull();
+    });
+});
+
+// ─── updateData() → _model delegation ─────────────────────────────────────────
+// Strategy: spy on _model.updateData so we capture the delegation call before
+// the rest of the legacy function reaches untestable globals / DOM methods.
+
+describe('PlaneObject.updateData() → _model delegation', () => {
+    function callUpdateData(plane, data) {
+        const calls = [];
+        plane._model.updateData = (d) => { calls.push(d); };
+        try { plane.updateData(1000, 990, data, false); } catch (_) {}
+        return calls;
+    }
+
+    it('passes position fields to _model.updateData', () => {
+        const plane = new PlaneObject('a1b2c3');
+        const calls = callUpdateData(plane, { lat: 45.0, lon: -93.0, alt_baro: 35000, gs: 420, track: 90, seen: 3, seen_pos: 3, type: 'adsb', flight: 'AAL123' });
+        expect(calls).toHaveLength(1);
+        expect(calls[0].lat).toBe(45.0);
+        expect(calls[0].lon).toBe(-93.0);
+        expect(calls[0].alt_baro).toBe(35000);
+    });
+
+    it('passes speed and track to _model.updateData', () => {
+        const plane = new PlaneObject('b2c3d4');
+        const calls = callUpdateData(plane, { lat: 1, lon: 1, gs: 420, track: 90, seen: 3, seen_pos: 3, type: 'adsb' });
+        expect(calls).toHaveLength(1);
+        expect(calls[0].gs).toBe(420);
+        expect(calls[0].track).toBe(90);
+    });
+
+    it('passes callsign and source type to _model.updateData', () => {
+        const plane = new PlaneObject('c3d4e5');
+        const calls = callUpdateData(plane, { lat: 1, lon: 1, seen: 3, seen_pos: 3, type: 'adsb', flight: 'UAL456' });
+        expect(calls).toHaveLength(1);
+        expect(calls[0].flight).toBe('UAL456');
+        expect(calls[0].type).toBe('adsb');
     });
 });

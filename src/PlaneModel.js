@@ -1,6 +1,7 @@
 export class PlaneModel {
     constructor(hex) {
         this.hex = hex;
+        this.selected = false;
         this.setNull();
     }
 
@@ -29,6 +30,7 @@ export class PlaneModel {
         this.seen     = null;
         this.seen_pos = null;
         this.type     = null;
+        this.visible  = true;
     }
 
     updateData(data) {
