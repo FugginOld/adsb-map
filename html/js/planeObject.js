@@ -18,8 +18,6 @@ function PlaneObject(icao) {
     // most properties are set via this function so they can be reset easily
     this.setNull();
 
-    this._model = new PlaneModel(this.icao);
-
     // Track history as a series of line segments
     this.elastic_feature = null;
     this.track_linesegs = [];
@@ -141,8 +139,6 @@ PlaneObject.prototype.setNull = function() {
 
     this.airline = null;
     this.airlineKey = null;
-
-    if (this._model) this._model.setNull();
 };
 
 function planeCloneState(target, source) {
@@ -1408,7 +1404,6 @@ PlaneObject.prototype.updateData = function(now, last, data, init) {
     const flight = data.flight;
 
     this.last_message_time = now - seen;
-    this._model.updateData({ lat, lon, alt_baro, gs, track, flight, type, seen, seen_pos });
 
     // remember last known position even if stale
     // do not show or process mlat positions when filtered out.

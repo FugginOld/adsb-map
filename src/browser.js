@@ -2,7 +2,5 @@
 // When script.js is eventually converted to ESM, replace these window assignments
 // with direct imports from the individual modules.
 import { normalizeAircraft } from './normalizeAircraft.js';
-import { PlaneModel } from './PlaneModel.js';
 
 window.normalizeAircraft = normalizeAircraft;
-window.PlaneModel = PlaneModel;
