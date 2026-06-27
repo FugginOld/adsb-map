@@ -3,14 +3,6 @@
 // with direct imports from the individual modules.
 import { normalizeAircraft } from './normalizeAircraft.js';
 import { PlaneModel } from './PlaneModel.js';
-import { PlaneRenderer } from './PlaneRenderer.js';
-
-// OL-aware createPoint factory — kept here so PlaneRenderer itself stays OL-free
-function olCreatePoint(lon, lat) {
-    return new ol.geom.Point(ol.proj.fromLonLat([lon, lat]));
-}
 
 window.normalizeAircraft = normalizeAircraft;
 window.PlaneModel = PlaneModel;
-window.PlaneRenderer = PlaneRenderer;
-window.olCreatePoint = olCreatePoint;
