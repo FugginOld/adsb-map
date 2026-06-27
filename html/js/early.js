@@ -735,7 +735,7 @@ function Toggle(arg) {
     this.key = arg.key;
     this.state = (arg.init ? true : false);
     this.setState = arg.setState;
-    this.checkbox = (arg.checkbox == undefined) ? ('#' + this.key + '_cb') : null;
+    this.checkbox = (arg.checkbox === undefined) ? ('#' + this.key + '_cb') : arg.checkbox;
     this.display = arg.display;
     this.container = arg.container;
     this.button = arg.button || this.checkbox;
@@ -775,9 +775,13 @@ Toggle.prototype.toggle = function(override, init) {
         this.state = !this.state;
 
     if (this.setState) {
-        if (this.setState(this.state) == false) {
-            this.state = !this.state;
-            return;
+        try {
+            if (this.setState(this.state) == false) {
+                this.state = !this.state;
+                return;
+            }
+        } catch(e) {
+            console.warn('Toggle setState error [' + this.key + ']:', e.message);
         }
     }
 

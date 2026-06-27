@@ -1818,13 +1818,15 @@ function earlyInitPage() {
 
 
 
-    document.getElementById('selectall_checkbox').addEventListener('click', function() {
-        if (document.getElementById('selectall_checkbox').classList.contains('settingsCheckboxChecked')) {
-            deselectAllPlanes();
-        } else {
-            selectAllPlanes();
-        }
-    })
+    if (document.getElementById('selectall_checkbox')) {
+        document.getElementById('selectall_checkbox').addEventListener('click', function() {
+            if (document.getElementById('selectall_checkbox').classList.contains('settingsCheckboxChecked')) {
+                deselectAllPlanes();
+            } else {
+                selectAllPlanes();
+            }
+        });
+    }
 
     // Force map to redraw if sidebar container is resized - use a timer to debounce
     new ResizeObserver(function() {
@@ -4802,7 +4804,7 @@ function deselectAllPlanes(keepMain) {
 
     if (SelectedAllPlanes) {
         buttonActive('#T', false);
-        document.getElementById('selectall_checkbox').classList.remove('settingsCheckboxChecked');
+        document.getElementById('selectall_checkbox')?.classList.remove('settingsCheckboxChecked');
         SelectedAllPlanes = false;
         refreshFilter();
         return;
@@ -5061,6 +5063,8 @@ function filterBlockedMLAT(switchFilter) {
 }
 
 function buttonActive(id, state) {
+    if (typeof id === 'string') id = document.querySelector(id);
+    if (!id) return;
     if (state) {
         id.classList.add('activeButton');
         id.classList.remove('inActiveButton');
@@ -5551,7 +5555,7 @@ Filter.prototype.init = function() {
     this.input = document.getElementById(this.id + '_input');
     this.form = document.getElementById(this.id)
     this.form.onsubmit = (e) => { return this.update(e); };
-    document.getElementById(this.sid + '_reset').addEventListener('click', (e) => { return this.reset(e); });
+    document.getElementById(this.id + '_reset').addEventListener('click', (e) => { return this.reset(e); });
 }
 
 function initFilters() {
@@ -8397,8 +8401,8 @@ function showReplayBar(){
         document.getElementById('replayBar').style.display = '';
         document.getElementById('replayBar').style.display = 'grid';
         document.getElementById('replayBar').style.height = '100px';
-        document.getElementById('map_canvas').style.height = 'calc(100% - 100px');
-        document.getElementById('sidebar_canvas').style.height = 'calc(100% - 110px');
+        document.getElementById('map_canvas').style.height = 'calc(100% - 100px)';
+        document.getElementById('sidebar_canvas').style.height = 'calc(100% - 110px)';
         if (!replay) {
             replay = replayDefaults(new Date());
         }

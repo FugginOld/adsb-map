@@ -514,10 +514,12 @@ select.error, textarea.error, input.error {
 }
 
 .activeButton {
- color:#000
+    background-color: #fff;
+    color: var(--ACCENT);
 }
 .inActiveButton {
- color:#fff
+    background-color: var(--ACCENT);
+    color: #fff;
 }
 
 #highlighted_infoblock {
@@ -637,7 +639,6 @@ table.infoSectionTable tr td {
     box-shadow: calc( 4px * var(--SCALE)) calc( 4px * var(--SCALE)) calc( 10px * var(--SCALE)) #444444;
     padding: calc( 20px * var(--SCALE));
     z-index: 9999;
-    display: none;
     background-color: var(--BGCOLOR1);
 }
 
@@ -742,6 +743,33 @@ table.infoSectionTable tr td {
 }
 .ui-tabs-nav {
     background-color: var(--BGCOLOR2);
+    list-style: none;
+    margin: 0;
+    padding: 4px 4px 0;
+    display: flex;
+    gap: 2px;
+}
+.ui-tabs-nav li {
+    margin: 0;
+    padding: 0;
+}
+.ui-tabs-nav li a {
+    display: block;
+    padding: 5px 12px;
+    text-decoration: none;
+    color: var(--TXTCOLOR1);
+    background-color: var(--BGCOLOR1);
+    border: 1px solid var(--BGCOLOR2);
+    border-bottom: none;
+    border-radius: 3px 3px 0 0;
+    font-weight: bold;
+    font-size: var(--FS2);
+    cursor: pointer;
+}
+.ui-tabs-nav li.ui-tabs-active a {
+    background-color: var(--ACCENT);
+    color: #fff;
+    border-color: var(--ACCENT);
 }
 .ui-tabs-panel {
     background-color: var(--BGCOLOR1);
