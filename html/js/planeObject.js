@@ -141,6 +141,8 @@ PlaneObject.prototype.setNull = function() {
 
     this.airline = null;
     this.airlineKey = null;
+
+    if (this._model) this._model.setNull();
 };
 
 function planeCloneState(target, source) {

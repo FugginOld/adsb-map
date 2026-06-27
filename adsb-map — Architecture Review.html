@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<!-- saved from url=(0073)file:///C:/Users/Joe/AppData/Local/Temp/architecture-review-20260626.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>adsb-map — Architecture Review</title>
+<script src="./adsb-map — Architecture Review_files/saved_resource"></script>
+<script src="./adsb-map — Architecture Review_files/mermaid.min.js.download"></script>
+<style>
+  body { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  .card { break-inside: avoid; }
+  .mermaid svg { max-width: 100%; }
+  .badge-strong { background: #166534; color: #dcfce7; }
+  .badge-worth { background: #7c3aed; color: #ede9fe; }
+  .badge-spec { background: #92400e; color: #fef3c7; }
+  .warn { border-left: 3px solid #f59e0b; background: #fffbeb; padding: 0.5rem 0.75rem; }
+  pre { white-space: pre-wrap; }
+  .depth-bar-before { width: 80%; background: #ef4444; }
+  .depth-bar-after { width: 20%; background: #22c55e; }
+</style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.ml-4{margin-left:1rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-3{margin-top:0.75rem}.mt-4{margin-top:1rem}.flex{display:flex}.grid{display:grid}.h-4{height:1rem}.min-h-screen{min-height:100vh}.max-w-5xl{max-width:64rem}.list-inside{list-style-position:inside}.list-disc{list-style-type:disc}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:0.25rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-blue-700{--tw-border-opacity:1;border-color:rgb(29 78 216 / var(--tw-border-opacity, 1))}.border-gray-700{--tw-border-opacity:1;border-color:rgb(55 65 81 / var(--tw-border-opacity, 1))}.border-gray-800{--tw-border-opacity:1;border-color:rgb(31 41 55 / var(--tw-border-opacity, 1))}.border-green-900{--tw-border-opacity:1;border-color:rgb(20 83 45 / var(--tw-border-opacity, 1))}.border-red-900{--tw-border-opacity:1;border-color:rgb(127 29 29 / var(--tw-border-opacity, 1))}.bg-gray-950{--tw-bg-opacity:1;background-color:rgb(3 7 18 / var(--tw-bg-opacity, 1))}.bg-blue-900{--tw-bg-opacity:1;background-color:rgb(30 58 138 / var(--tw-bg-opacity, 1))}.bg-blue-950{--tw-bg-opacity:1;background-color:rgb(23 37 84 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-gray-900{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.bg-green-950{--tw-bg-opacity:1;background-color:rgb(5 46 22 / var(--tw-bg-opacity, 1))}.bg-red-950{--tw-bg-opacity:1;background-color:rgb(69 10 10 / var(--tw-bg-opacity, 1))}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-8{padding-left:2rem;padding-right:2rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.py-8{padding-top:2rem;padding-bottom:2rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.uppercase{text-transform:uppercase}.tracking-widest{letter-spacing:0.1em}.text-gray-100{--tw-text-opacity:1;color:rgb(243 244 246 / var(--tw-text-opacity, 1))}.text-blue-100{--tw-text-opacity:1;color:rgb(219 234 254 / var(--tw-text-opacity, 1))}.text-blue-200{--tw-text-opacity:1;color:rgb(191 219 254 / var(--tw-text-opacity, 1))}.text-blue-300{--tw-text-opacity:1;color:rgb(147 197 253 / var(--tw-text-opacity, 1))}.text-blue-400{--tw-text-opacity:1;color:rgb(96 165 250 / var(--tw-text-opacity, 1))}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-green-300{--tw-text-opacity:1;color:rgb(134 239 172 / var(--tw-text-opacity, 1))}.text-green-400{--tw-text-opacity:1;color:rgb(74 222 128 / var(--tw-text-opacity, 1))}.text-red-300{--tw-text-opacity:1;color:rgb(252 165 165 / var(--tw-text-opacity, 1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-yellow-300{--tw-text-opacity:1;color:rgb(253 224 71 / var(--tw-text-opacity, 1))}.text-yellow-400{--tw-text-opacity:1;color:rgb(250 204 21 / var(--tw-text-opacity, 1))}</style></head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+<!-- Header -->
+<div class="bg-gray-900 border-b border-gray-700 px-8 py-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-xs text-gray-500 mb-1">adsb-map · Architecture Review · 2026-06-26</div>
+    <h1 class="text-2xl font-bold text-white">Architectural Friction Report</h1>
+    <p class="text-gray-400 mt-1 text-sm">Deepening opportunities — shallow modules to make deep, scattered concepts to concentrate, seams to commit to.</p>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-8 py-8 space-y-8">
+
+<!-- Landscape -->
+<div class="bg-gray-900 rounded-xl border border-gray-700 p-6">
+  <h2 class="text-lg font-bold text-white mb-3">Landscape at a Glance</h2>
+  <div class="grid grid-cols-3 gap-4 mb-4">
+    <div class="bg-gray-800 rounded-lg p-4 text-center">
+      <div class="text-3xl font-bold text-red-400">18,600</div>
+      <div class="text-xs text-gray-400 mt-1">lines of JS</div>
+    </div>
+    <div class="bg-gray-800 rounded-lg p-4 text-center">
+      <div class="text-3xl font-bold text-red-400">~1%</div>
+      <div class="text-xs text-gray-400 mt-1">test coverage</div>
+    </div>
+    <div class="bg-gray-800 rounded-lg p-4 text-center">
+      <div class="text-3xl font-bold text-yellow-400">5%</div>
+      <div class="text-xs text-gray-400 mt-1">modernization done</div>
+    </div>
+  </div>
+  <p class="text-gray-400 text-sm">The codebase is mid-migration: a 9,218-line monolith (<code class="text-blue-300">script.js</code>) plus a 3,146-line god object (<code class="text-blue-300">planeObject.js</code>), with a small bridgehead of ESM modules in <code class="text-blue-300">src/</code> (PlaneModel, PlaneRenderer, normalizeAircraft). The new modules are thin and shallow; the real depth and logic remain in the legacy files. The seam between old and new is not yet committed to, creating two sources of truth for almost every core concept.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CANDIDATE 1 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="card bg-gray-900 rounded-xl border border-gray-700 p-6 space-y-5">
+
+  <div class="flex items-start justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-white">Candidate 1 — AircraftUpdatePipeline</h2>
+      <p class="text-gray-400 text-sm mt-1">A deep module that owns the complete ingest cycle: wire data → normalized model → state delta</p>
+    </div>
+    <span class="badge-strong text-xs font-bold px-3 py-1 rounded-full ml-4 whitespace-nowrap">Strong</span>
+  </div>
+
+  <!-- Files -->
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Files involved</div>
+    <div class="flex flex-wrap gap-2">
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/script.js (processAircraft, fetchDone)</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">src/normalizeAircraft.js</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">src/PlaneModel.js</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/planeObject.js (updateData calls)</span>
+    </div>
+  </div>
+
+  <!-- Problem -->
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Problem</div>
+    <p class="text-gray-300 text-sm">The aircraft update pipeline is not a module at all — it is a sequence of function calls spread across three files with global side-effects at each step. <code class="text-yellow-300">fetchDone()</code> unpacks the JSON, <code class="text-yellow-300">processAircraft()</code> normalizes the wire format (old code), <code class="text-yellow-300">normalizeAircraft()</code> normalizes it again (new code), and then <code class="text-yellow-300">PlaneModel.updateData()</code> is called from inside the old update path. The seam between "data arrived" and "model is up to date" is wide open: tests cannot exercise this pipeline without a full browser environment, because every step mutates globals (<code class="text-yellow-300">g.planes</code>, <code class="text-yellow-300">SelPlanes</code>) and reaches into the DOM.</p>
+    <p class="text-gray-300 text-sm mt-2">The interface is as complex as the implementation: to call the pipeline, you must know the exact shape of the global state, the DOM elements that hold configuration, and the order in which functions must fire. There is no locality — the same concept (normalize this aircraft) exists in two places simultaneously.</p>
+  </div>
+
+  <!-- Solution -->
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Solution</div>
+    <p class="text-gray-300 text-sm">Extract a single deep <strong>AircraftUpdatePipeline</strong> module. Its interface is one method: <code class="text-green-300">pipeline.ingest(wireFrame)</code> which accepts the raw aircraft.json payload and returns an array of <code class="text-green-300">AircraftStateChange</code> objects — plain data describing what changed. The pipeline owns all normalization, model updates, and staleness evaluation. The rest of the app reacts to state-change events rather than being called directly.</p>
+    <p class="text-gray-300 text-sm mt-2">The key move: accept a <code class="text-green-300">PlaneStore</code> dependency (an object that holds aircraft by ICAO) rather than reading from <code class="text-yellow-300">g.planes</code>. The store can be an in-memory fake in tests, Postgres-backed in a hypothetical server mode, or the existing global in production — but it is the pipeline's only dependency, not a side-effect.</p>
+  </div>
+
+  <!-- Benefits -->
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Benefits — Locality &amp; Leverage</div>
+    <ul class="text-gray-300 text-sm space-y-1 list-disc list-inside">
+      <li><strong>Locality:</strong> All normalization, validation, and staleness logic in one place. Change the wire format → edit one file.</li>
+      <li><strong>Leverage:</strong> Every feature that needs to react to aircraft updates (rendering, table, history) calls <code class="text-green-300">ingest()</code> — no feature needs to know about JSON structure.</li>
+      <li><strong>Testability:</strong> Tests inject a plain wire frame, assert on returned state-change objects. No DOM, no OpenLayers, no global state. The old 99%-untested pipeline becomes fully unit-testable.</li>
+      <li><strong>Seam clarity:</strong> The seam between "data" and "display" is now real and explicit. Rendering can subscribe to state-change events rather than being called imperatively.</li>
+    </ul>
+  </div>
+
+  <!-- Before / After -->
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Before / After</div>
+    <div class="grid grid-cols-2 gap-4">
+
+      <!-- BEFORE -->
+      <div class="bg-gray-950 rounded-lg p-4 border border-red-900">
+        <div class="text-xs font-bold text-red-400 mb-3">BEFORE — shallow, scattered</div>
+        <div class="mermaid text-xs" data-processed="true"><div id="dmermaid-1782520286088" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif;"><svg id="mermaid-1782520286088" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2412 512" style="max-width: 512px;" role="graphics-document document" aria-roledescription="error"><style>#mermaid-1782520286088{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#ccc;}#mermaid-1782520286088 .error-icon{fill:#a44141;}#mermaid-1782520286088 .error-text{fill:#ddd;stroke:#ddd;}#mermaid-1782520286088 .edge-thickness-normal{stroke-width:2px;}#mermaid-1782520286088 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1782520286088 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1782520286088 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1782520286088 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1782520286088 .marker{fill:lightgrey;stroke:lightgrey;}#mermaid-1782520286088 .marker.cross{stroke:lightgrey;}#mermaid-1782520286088 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-1782520286088 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><g><path class="error-icon" d="m411.313,123.313c6.25-6.25 6.25-16.375 0-22.625s-16.375-6.25-22.625,0l-32,32-9.375,9.375-20.688-20.688c-12.484-12.5-32.766-12.5-45.25,0l-16,16c-1.261,1.261-2.304,2.648-3.31,4.051-21.739-8.561-45.324-13.426-70.065-13.426-105.867,0-192,86.133-192,192s86.133,192 192,192 192-86.133 192-192c0-24.741-4.864-48.327-13.426-70.065 1.402-1.007 2.79-2.049 4.051-3.31l16-16c12.5-12.492 12.5-32.758 0-45.25l-20.688-20.688 9.375-9.375 32.001-31.999zm-219.313,100.687c-52.938,0-96,43.063-96,96 0,8.836-7.164,16-16,16s-16-7.164-16-16c0-70.578 57.422-128 128-128 8.836,0 16,7.164 16,16s-7.164,16-16,16z"></path><path class="error-icon" d="m459.02,148.98c-6.25-6.25-16.375-6.25-22.625,0s-6.25,16.375 0,22.625l16,16c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688 6.25-6.25 6.25-16.375 0-22.625l-16.001-16z"></path><path class="error-icon" d="m340.395,75.605c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688 6.25-6.25 6.25-16.375 0-22.625l-16-16c-6.25-6.25-16.375-6.25-22.625,0s-6.25,16.375 0,22.625l15.999,16z"></path><path class="error-icon" d="m400,64c8.844,0 16-7.164 16-16v-32c0-8.836-7.156-16-16-16-8.844,0-16,7.164-16,16v32c0,8.836 7.156,16 16,16z"></path><path class="error-icon" d="m496,96.586h-32c-8.844,0-16,7.164-16,16 0,8.836 7.156,16 16,16h32c8.844,0 16-7.164 16-16 0-8.836-7.156-16-16-16z"></path><path class="error-icon" d="m436.98,75.605c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688l32-32c6.25-6.25 6.25-16.375 0-22.625s-16.375-6.25-22.625,0l-32,32c-6.251,6.25-6.251,16.375-0.001,22.625z"></path><text class="error-text" x="1440" y="250" font-size="150px" style="text-anchor: middle;">Syntax error in text</text><text class="error-text" x="1250" y="400" font-size="100px" style="text-anchor: middle;">mermaid version 10.9.6</text></g></svg></div></div>
+      </div>
+
+      <!-- AFTER -->
+      <div class="bg-gray-950 rounded-lg p-4 border border-green-900">
+        <div class="text-xs font-bold text-green-400 mb-3">AFTER — deep, single interface</div>
+        <div class="mermaid text-xs" data-processed="true"><div id="dmermaid-1782520286098" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif;"><svg id="mermaid-1782520286098" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2412 512" style="max-width: 512px;" role="graphics-document document" aria-roledescription="error"><style>#mermaid-1782520286098{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#ccc;}#mermaid-1782520286098 .error-icon{fill:#a44141;}#mermaid-1782520286098 .error-text{fill:#ddd;stroke:#ddd;}#mermaid-1782520286098 .edge-thickness-normal{stroke-width:2px;}#mermaid-1782520286098 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1782520286098 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1782520286098 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1782520286098 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1782520286098 .marker{fill:lightgrey;stroke:lightgrey;}#mermaid-1782520286098 .marker.cross{stroke:lightgrey;}#mermaid-1782520286098 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-1782520286098 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><g><path class="error-icon" d="m411.313,123.313c6.25-6.25 6.25-16.375 0-22.625s-16.375-6.25-22.625,0l-32,32-9.375,9.375-20.688-20.688c-12.484-12.5-32.766-12.5-45.25,0l-16,16c-1.261,1.261-2.304,2.648-3.31,4.051-21.739-8.561-45.324-13.426-70.065-13.426-105.867,0-192,86.133-192,192s86.133,192 192,192 192-86.133 192-192c0-24.741-4.864-48.327-13.426-70.065 1.402-1.007 2.79-2.049 4.051-3.31l16-16c12.5-12.492 12.5-32.758 0-45.25l-20.688-20.688 9.375-9.375 32.001-31.999zm-219.313,100.687c-52.938,0-96,43.063-96,96 0,8.836-7.164,16-16,16s-16-7.164-16-16c0-70.578 57.422-128 128-128 8.836,0 16,7.164 16,16s-7.164,16-16,16z"></path><path class="error-icon" d="m459.02,148.98c-6.25-6.25-16.375-6.25-22.625,0s-6.25,16.375 0,22.625l16,16c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688 6.25-6.25 6.25-16.375 0-22.625l-16.001-16z"></path><path class="error-icon" d="m340.395,75.605c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688 6.25-6.25 6.25-16.375 0-22.625l-16-16c-6.25-6.25-16.375-6.25-22.625,0s-6.25,16.375 0,22.625l15.999,16z"></path><path class="error-icon" d="m400,64c8.844,0 16-7.164 16-16v-32c0-8.836-7.156-16-16-16-8.844,0-16,7.164-16,16v32c0,8.836 7.156,16 16,16z"></path><path class="error-icon" d="m496,96.586h-32c-8.844,0-16,7.164-16,16 0,8.836 7.156,16 16,16h32c8.844,0 16-7.164 16-16 0-8.836-7.156-16-16-16z"></path><path class="error-icon" d="m436.98,75.605c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688l32-32c6.25-6.25 6.25-16.375 0-22.625s-16.375-6.25-22.625,0l-32,32c-6.251,6.25-6.251,16.375-0.001,22.625z"></path><text class="error-text" x="1440" y="250" font-size="150px" style="text-anchor: middle;">Syntax error in text</text><text class="error-text" x="1250" y="400" font-size="100px" style="text-anchor: middle;">mermaid version 10.9.6</text></g></svg></div></div>
+      </div>
+
+    </div>
+
+    <!-- Depth visualisation -->
+    <div class="mt-4 grid grid-cols-2 gap-4">
+      <div class="bg-gray-950 rounded p-3 border border-gray-800">
+        <div class="text-xs text-gray-500 mb-2">Interface complexity (before)</div>
+        <div class="h-4 rounded depth-bar-before mb-1"></div>
+        <div class="text-xs text-red-400">Must know: g.planes, DOM, JSON shape, call order, 3 files</div>
+      </div>
+      <div class="bg-gray-950 rounded p-3 border border-gray-800">
+        <div class="text-xs text-gray-500 mb-2">Interface complexity (after)</div>
+        <div class="h-4 rounded" style="width:15%;background:#22c55e;"></div>
+        <div class="text-xs text-green-400">Must know: pipeline.ingest(wireFrame) → StateChange[]</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CANDIDATE 2 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="card bg-gray-900 rounded-xl border border-gray-700 p-6 space-y-5">
+
+  <div class="flex items-start justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-white">Candidate 2 — Commit the PlaneModel Seam (eliminate PlaneObject)</h2>
+      <p class="text-gray-400 text-sm mt-1">The in-progress migration created two sources of truth; the seam must be committed to or abandoned</p>
+    </div>
+    <span class="badge-strong text-xs font-bold px-3 py-1 rounded-full ml-4 whitespace-nowrap">Strong</span>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Files involved</div>
+    <div class="flex flex-wrap gap-2">
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">src/PlaneModel.js</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/planeObject.js (3,146 lines)</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">src/PlaneRenderer.js</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/script.js (PlaneObject references)</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Problem</div>
+    <p class="text-gray-300 text-sm">The modernization introduced <code class="text-yellow-300">PlaneModel</code> (49 lines, tested) as a replacement for <code class="text-yellow-300">PlaneObject</code> (3,146 lines, untested). Both exist simultaneously. Both hold aircraft data. A position update writes to <code class="text-yellow-300">PlaneObject.lat</code> <em>and</em> <code class="text-yellow-300">PlaneModel.lat</code>. If one is updated without the other, the display shows stale data with no error.</p>
+    <p class="text-gray-300 text-sm mt-2">There is no one adapter — there are two implementations of the same concept at an uncommitted seam. This is not "one adapter means hypothetical, two means real." It is two implementations with no deliberate seam at all, just migration debt.</p>
+    <p class="text-gray-300 text-sm mt-2"><strong>Deletion test:</strong> if you delete <code class="text-yellow-300">PlaneModel</code>, complexity reappears in PlaneObject (it already is there). If you delete <code class="text-yellow-300">PlaneObject</code>, complexity must move somewhere — but it's recoverable. PlaneObject is not earning its keep as a <em>separate</em> structure; it's earning its keep as the <em>only</em> structure.</p>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Solution</div>
+    <p class="text-gray-300 text-sm">Commit the seam: make <code class="text-green-300">PlaneModel</code> the one canonical aircraft data structure, and reduce <code class="text-green-300">PlaneObject</code> to a rendering adapter — an object that holds an OL feature and syncs it from a PlaneModel. No aircraft data in the adapter. Volatile state (selected, visible, trail) either moves into PlaneModel or into separate stores keyed by ICAO.</p>
+    <p class="text-gray-300 text-sm mt-2">PlaneRenderer already exists for this; it should be the only rendering adapter. PlaneObject's icon-caching and style logic moves into a <code class="text-green-300">MarkerPipeline</code> module (Candidate 3).</p>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Benefits — Locality &amp; Leverage</div>
+    <ul class="text-gray-300 text-sm space-y-1 list-disc list-inside">
+      <li><strong>Locality:</strong> One place where aircraft data lives. No risk of divergence between two models.</li>
+      <li><strong>Leverage:</strong> PlaneModel's 121 lines of test coverage now covers <em>all</em> aircraft data — not just 49 lines of a shadow model.</li>
+      <li><strong>Testability:</strong> Rendering tests only need a PlaneModel + a mock OL feature. Today they need PlaneObject, script.js globals, and a DOM.</li>
+    </ul>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Before / After</div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-gray-950 rounded-lg p-4 border border-red-900">
+        <div class="text-xs font-bold text-red-400 mb-3">BEFORE — two sources of truth</div>
+        <div class="mermaid text-xs" data-processed="true"><svg id="mermaid-1782520286106" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="max-width: 579.53125px;" viewBox="-8 -8 579.53125 183.5" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#mermaid-1782520286106{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#ccc;}#mermaid-1782520286106 .error-icon{fill:#a44141;}#mermaid-1782520286106 .error-text{fill:#ddd;stroke:#ddd;}#mermaid-1782520286106 .edge-thickness-normal{stroke-width:2px;}#mermaid-1782520286106 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1782520286106 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1782520286106 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1782520286106 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1782520286106 .marker{fill:lightgrey;stroke:lightgrey;}#mermaid-1782520286106 .marker.cross{stroke:lightgrey;}#mermaid-1782520286106 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-1782520286106 .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#ccc;}#mermaid-1782520286106 .cluster-label text{fill:#F9FFFE;}#mermaid-1782520286106 .cluster-label span,#mermaid-1782520286106 p{color:#F9FFFE;}#mermaid-1782520286106 .label text,#mermaid-1782520286106 span,#mermaid-1782520286106 p{fill:#ccc;color:#ccc;}#mermaid-1782520286106 .node rect,#mermaid-1782520286106 .node circle,#mermaid-1782520286106 .node ellipse,#mermaid-1782520286106 .node polygon,#mermaid-1782520286106 .node path{fill:#1f2020;stroke:#81B1DB;stroke-width:1px;}#mermaid-1782520286106 .flowchart-label text{text-anchor:middle;}#mermaid-1782520286106 .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#mermaid-1782520286106 .node .label{text-align:center;}#mermaid-1782520286106 .node.clickable{cursor:pointer;}#mermaid-1782520286106 .arrowheadPath{fill:lightgrey;}#mermaid-1782520286106 .edgePath .path{stroke:lightgrey;stroke-width:2.0px;}#mermaid-1782520286106 .flowchart-link{stroke:lightgrey;fill:none;}#mermaid-1782520286106 .edgeLabel{background-color:hsl(0, 0%, 34.4117647059%);text-align:center;}#mermaid-1782520286106 .edgeLabel rect{opacity:0.5;background-color:hsl(0, 0%, 34.4117647059%);fill:hsl(0, 0%, 34.4117647059%);}#mermaid-1782520286106 .labelBkg{background-color:rgba(87.75, 87.75, 87.75, 0.5);}#mermaid-1782520286106 .cluster rect{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:rgba(255, 255, 255, 0.25);stroke-width:1px;}#mermaid-1782520286106 .cluster text{fill:#F9FFFE;}#mermaid-1782520286106 .cluster span,#mermaid-1782520286106 p{color:#F9FFFE;}#mermaid-1782520286106 div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(20, 1.5873015873%, 12.3529411765%);border:1px solid rgba(255, 255, 255, 0.25);border-radius:2px;pointer-events:none;z-index:100;}#mermaid-1782520286106 .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#ccc;}#mermaid-1782520286106 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="mermaid-1782520286106_flowchart-pointEnd" class="marker flowchart" viewBox="0 0 10 10" refX="6" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1782520286106_flowchart-pointStart" class="marker flowchart" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1782520286106_flowchart-circleEnd" class="marker flowchart" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-1782520286106_flowchart-circleStart" class="marker flowchart" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-1782520286106_flowchart-crossEnd" class="marker cross flowchart" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1782520286106_flowchart-crossStart" class="marker cross flowchart" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M71.096,61.25L77.7,57.625C84.304,54,97.511,46.75,107.398,43.125C117.285,39.5,123.852,39.5,127.135,39.5L130.419,39.5" id="L-A-B-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-B" style="fill:none;" marker-end="url(#mermaid-1782520286106_flowchart-pointEnd)"></path><path d="M71.096,92.25L77.7,95.875C84.304,99.5,97.511,106.75,117.865,110.375C138.219,114,165.719,114,195.805,114C225.891,114,258.563,114,280.777,114.84C302.991,115.679,314.747,117.358,320.625,118.198L326.503,119.038" id="L-A-C-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-C" style="fill:none;" marker-end="url(#mermaid-1782520286106_flowchart-pointEnd)"></path><path d="M234.654,82.831L244.084,92.692C253.514,102.554,272.374,122.277,287.682,131.299C302.991,140.321,314.747,138.642,320.625,137.802L326.503,136.962" id="L-B-C-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-C" style="fill:none;" marker-start="url(#mermaid-1782520286106_flowchart-pointStart)" marker-end="url(#mermaid-1782520286106_flowchart-pointEnd)"></path><path d="M250.719,39.5L257.471,39.5C264.224,39.5,277.729,39.5,300.818,39.5C323.906,39.5,356.578,39.5,386.664,39.5C416.75,39.5,444.25,39.5,464.125,44.876C483.999,50.251,496.248,61.003,502.373,66.378L508.498,71.754" id="L-B-D-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-D" style="fill:none;" marker-end="url(#mermaid-1782520286106_flowchart-pointEnd)"></path><path d="M446.75,128L450.917,128C455.083,128,463.417,128,472.521,124.85C481.625,121.7,491.5,115.4,496.438,112.25L501.376,109.1" id="L-C-D-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-C LE-D" style="fill:none;" marker-end="url(#mermaid-1782520286106_flowchart-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignobject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignobject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel" transform="translate(291.234375, 142)"><g class="label" transform="translate(-15.515625, -8)"><foreignobject width="31.03125" height="16"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel">sync</span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignobject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignobject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignobject></g></g></g><g class="nodes"><g class="node default default flowchart-label" id="flowchart-A-2" data-node="true" data-id="A" transform="translate(42.859375, 76.75)"><rect class="basic label-container" style="" rx="0" ry="0" x="-42.859375" y="-15.5" width="85.71875" height="31"></rect><g class="label" style="" transform="translate(-35.359375, -8)"><rect></rect><foreignobject width="70.71875" height="16"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Wire Data</span></div></foreignobject></g></g><g class="node default default flowchart-label" id="flowchart-B-3" data-node="true" data-id="B" transform="translate(193.21875, 39.5)"><rect class="basic label-container" style="fill:#7f1d1d;" rx="0" ry="0" x="-57.5" y="-39.5" width="115" height="79"></rect><g class="label" style="color:#fca5a5;" transform="translate(-50, -32)"><rect></rect><foreignobject width="100" height="64"><div style="color: rgb(252, 165, 165); display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel" style="color:#fca5a5;">PlaneObject<br>3146 lines<br>lat, lon, alt...<br>60+ props</span></div></foreignobject></g></g><g class="node default default flowchart-label" id="flowchart-C-5" data-node="true" data-id="C" transform="translate(389.25, 128)"><rect class="basic label-container" style="fill:#713f12;" rx="0" ry="0" x="-57.5" y="-39.5" width="115" height="79"></rect><g class="label" style="color:#fef3c7;" transform="translate(-50, -32)"><rect></rect><foreignobject width="100" height="64"><div style="color: rgb(254, 243, 199); display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel" style="color:#fef3c7;">PlaneModel<br>49 lines<br>lat, lon, alt...<br>8 props</span></div></foreignobject></g></g><g class="node default default flowchart-label" id="flowchart-D-9" data-node="true" data-id="D" transform="translate(530.140625, 90.75)"><rect class="basic label-container" style="" rx="0" ry="0" x="-33.390625" y="-15.5" width="66.78125" height="31"></rect><g class="label" style="" transform="translate(-25.890625, -8)"><rect></rect><foreignobject width="51.78125" height="16"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">OL Map</span></div></foreignobject></g></g></g></g></g></svg></div>
+      </div>
+      <div class="bg-gray-950 rounded-lg p-4 border border-green-900">
+        <div class="text-xs font-bold text-green-400 mb-3">AFTER — committed seam</div>
+        <div class="mermaid text-xs" data-processed="true"><svg id="mermaid-1782520286155" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="max-width: 564.765625px;" viewBox="-8 -8 564.765625 176" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#mermaid-1782520286155{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#ccc;}#mermaid-1782520286155 .error-icon{fill:#a44141;}#mermaid-1782520286155 .error-text{fill:#ddd;stroke:#ddd;}#mermaid-1782520286155 .edge-thickness-normal{stroke-width:2px;}#mermaid-1782520286155 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1782520286155 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1782520286155 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1782520286155 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1782520286155 .marker{fill:lightgrey;stroke:lightgrey;}#mermaid-1782520286155 .marker.cross{stroke:lightgrey;}#mermaid-1782520286155 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-1782520286155 .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#ccc;}#mermaid-1782520286155 .cluster-label text{fill:#F9FFFE;}#mermaid-1782520286155 .cluster-label span,#mermaid-1782520286155 p{color:#F9FFFE;}#mermaid-1782520286155 .label text,#mermaid-1782520286155 span,#mermaid-1782520286155 p{fill:#ccc;color:#ccc;}#mermaid-1782520286155 .node rect,#mermaid-1782520286155 .node circle,#mermaid-1782520286155 .node ellipse,#mermaid-1782520286155 .node polygon,#mermaid-1782520286155 .node path{fill:#1f2020;stroke:#81B1DB;stroke-width:1px;}#mermaid-1782520286155 .flowchart-label text{text-anchor:middle;}#mermaid-1782520286155 .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#mermaid-1782520286155 .node .label{text-align:center;}#mermaid-1782520286155 .node.clickable{cursor:pointer;}#mermaid-1782520286155 .arrowheadPath{fill:lightgrey;}#mermaid-1782520286155 .edgePath .path{stroke:lightgrey;stroke-width:2.0px;}#mermaid-1782520286155 .flowchart-link{stroke:lightgrey;fill:none;}#mermaid-1782520286155 .edgeLabel{background-color:hsl(0, 0%, 34.4117647059%);text-align:center;}#mermaid-1782520286155 .edgeLabel rect{opacity:0.5;background-color:hsl(0, 0%, 34.4117647059%);fill:hsl(0, 0%, 34.4117647059%);}#mermaid-1782520286155 .labelBkg{background-color:rgba(87.75, 87.75, 87.75, 0.5);}#mermaid-1782520286155 .cluster rect{fill:hsl(180, 1.5873015873%, 28.3529411765%);stroke:rgba(255, 255, 255, 0.25);stroke-width:1px;}#mermaid-1782520286155 .cluster text{fill:#F9FFFE;}#mermaid-1782520286155 .cluster span,#mermaid-1782520286155 p{color:#F9FFFE;}#mermaid-1782520286155 div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(20, 1.5873015873%, 12.3529411765%);border:1px solid rgba(255, 255, 255, 0.25);border-radius:2px;pointer-events:none;z-index:100;}#mermaid-1782520286155 .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#ccc;}#mermaid-1782520286155 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g><marker id="mermaid-1782520286155_flowchart-pointEnd" class="marker flowchart" viewBox="0 0 10 10" refX="6" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1782520286155_flowchart-pointStart" class="marker flowchart" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1782520286155_flowchart-circleEnd" class="marker flowchart" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-1782520286155_flowchart-circleStart" class="marker flowchart" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-1782520286155_flowchart-crossEnd" class="marker cross flowchart" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-1782520286155_flowchart-crossStart" class="marker cross flowchart" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M85.719,84L89.885,84C94.052,84,102.385,84,109.835,84C117.285,84,123.852,84,127.135,84L130.419,84" id="L-A-B-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-B" style="fill:none;" marker-end="url(#mermaid-1782520286155_flowchart-pointEnd)"></path><path d="M254.938,47.012L259.104,44.427C263.271,41.842,271.604,36.671,279.054,34.085C286.504,31.5,293.071,31.5,296.354,31.5L299.638,31.5" id="L-B-C-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-C" style="fill:none;" marker-end="url(#mermaid-1782520286155_flowchart-pointEnd)"></path><path d="M431.984,31.5L436.151,31.5C440.318,31.5,448.651,31.5,456.101,31.5C463.551,31.5,470.118,31.5,473.401,31.5L476.684,31.5" id="L-C-D-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-C LE-D" style="fill:none;" marker-end="url(#mermaid-1782520286155_flowchart-pointEnd)"></path><path d="M254.938,120.988L259.104,123.573C263.271,126.158,271.604,131.329,279.126,133.915C286.647,136.5,293.357,136.5,296.712,136.5L300.067,136.5" id="L-B-E-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-E" style="fill:none;" marker-end="url(#mermaid-1782520286155_flowchart-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignobject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignobject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignobject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" transform="translate(0, 0)"><foreignobject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="edgeLabel"></span></div></foreignobject></g></g></g><g class="nodes"><g class="node default default flowchart-label" id="flowchart-A-14" data-node="true" data-id="A" transform="translate(42.859375, 84)"><rect class="basic label-container" style="" rx="0" ry="0" x="-42.859375" y="-15.5" width="85.71875" height="31"></rect><g class="label" style="" transform="translate(-35.359375, -8)"><rect></rect><foreignobject width="70.71875" height="16"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">Wire Data</span></div></foreignobject></g></g><g class="node default default flowchart-label" id="flowchart-B-15" data-node="true" data-id="B" transform="translate(195.328125, 84)"><rect class="basic label-container" style="fill:#14532d;" rx="0" ry="0" x="-59.609375" y="-39.5" width="119.21875" height="79"></rect><g class="label" style="color:#bbf7d0;" transform="translate(-52.109375, -32)"><rect></rect><foreignobject width="104.21875" height="64"><div style="color: rgb(187, 247, 208); display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel" style="color:#bbf7d0;">PlaneModel<br><em>canonical</em><br>lat, lon, alt...<br>+ display state</span></div></foreignobject></g></g><g class="node default default flowchart-label" id="flowchart-C-17" data-node="true" data-id="C" transform="translate(368.4609375, 31.5)"><rect class="basic label-container" style="fill:#1e3a5f;" rx="0" ry="0" x="-63.5234375" y="-31.5" width="127.046875" height="63"></rect><g class="label" style="color:#bfdbfe;" transform="translate(-56.0234375, -24)"><rect></rect><foreignobject width="112.046875" height="48"><div style="color: rgb(191, 219, 254); display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel" style="color:#bfdbfe;">PlaneRenderer<br><em>adapter</em><br>OL feature sync</span></div></foreignobject></g></g><g class="node default default flowchart-label" id="flowchart-D-19" data-node="true" data-id="D" transform="translate(515.375, 31.5)"><rect class="basic label-container" style="" rx="0" ry="0" x="-33.390625" y="-15.5" width="66.78125" height="31"></rect><g class="label" style="" transform="translate(-25.890625, -8)"><rect></rect><foreignobject width="51.78125" height="16"><div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;"><span class="nodeLabel">OL Map</span></div></foreignobject></g></g><g class="node default default flowchart-label" id="flowchart-E-21" data-node="true" data-id="E" transform="translate(368.4609375, 136.5)"><rect class="basic label-container" style="fill:#3b0764;" rx="0" ry="0" x="-63.09375" y="-23.5" width="126.1875" height="47"></rect><g class="label" style="color:#e9d5ff;" transform="translate(-55.59375, -16)"><rect></rect><foreignobject width="111.1875" height="32"><div style="color: rgb(233, 213, 255); display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel" style="color:#e9d5ff;">Tests<br>plain assertions</span></div></foreignobject></g></g></g></g></g></svg></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CANDIDATE 3 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="card bg-gray-900 rounded-xl border border-gray-700 p-6 space-y-5">
+
+  <div class="flex items-start justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-white">Candidate 3 — StalenessOracle</h2>
+      <p class="text-gray-400 text-sm mt-1">Three files define "when is an aircraft dead" — concentrate them into one</p>
+    </div>
+    <span class="badge-worth text-xs font-bold px-3 py-1 rounded-full ml-4 whitespace-nowrap">Worth exploring</span>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Files involved</div>
+    <div class="flex flex-wrap gap-2">
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">src/PlaneModel.js (isStale — 15s/30s/120s)</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/script.js:reaper() (removes from map)</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/planeObject.js (track fade logic)</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Problem</div>
+    <p class="text-gray-300 text-sm">The concept of "aircraft staleness" has three separate implementations. <code class="text-yellow-300">PlaneModel.isStale()</code> checks timestamps against type-based thresholds (15s for ADSB, 30s for MLAT, 120s for ADS-C). <code class="text-yellow-300">script.js:reaper()</code> also checks timestamps and removes planes from the map on a different schedule. <code class="text-yellow-300">planeObject.js</code> fades tracks based on yet another implicit threshold. Changing the ADS-C timeout from 120s to 180s requires editing at least two files — possibly three.</p>
+    <p class="text-gray-300 text-sm mt-2">This is a shallow seam: the interface (is this aircraft stale?) is simple; the three implementations each add their own variation on the rule.</p>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Solution</div>
+    <p class="text-gray-300 text-sm">Extract a <code class="text-green-300">StalenessOracle</code> module. Interface: <code class="text-green-300">oracle.evaluate(model, now)</code> → <code class="text-green-300">StalenessLevel</code> (fresh | stale | dead). The oracle knows the thresholds by source type and exposes them as named constants. Reaper, track fader, and icon updater all call <code class="text-green-300">oracle.evaluate()</code> — they never reason about thresholds themselves.</p>
+    <p class="text-gray-300 text-sm mt-2">Tests verify the thresholds once, in one place. The existing <code class="text-yellow-300">PlaneModel.isStale()</code> can become the oracle's entry point or be absorbed into it.</p>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Benefits — Locality &amp; Leverage</div>
+    <ul class="text-gray-300 text-sm space-y-1 list-disc list-inside">
+      <li><strong>Locality:</strong> Timeout change = one file, one constant. No searching three files.</li>
+      <li><strong>Leverage:</strong> Three callers share one implementation. Add a new source type → update one threshold table.</li>
+      <li><strong>Testability:</strong> Threshold tests already exist in PlaneModel.test.js — they just need to cover all three levels instead of one boolean.</li>
+    </ul>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Before / After</div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-gray-950 rounded-lg p-4 border border-red-900">
+        <div class="text-xs font-bold text-red-400 mb-2">BEFORE — 3 definitions of "dead"</div>
+        <div class="flex flex-col gap-2 mt-1">
+          <div class="bg-red-950 rounded px-3 py-2 text-xs text-red-300">PlaneModel.isStale() — 15s/30s/120s boolean</div>
+          <div class="bg-red-950 rounded px-3 py-2 text-xs text-red-300">script.js:reaper() — own timestamp logic → removes feature</div>
+          <div class="bg-red-950 rounded px-3 py-2 text-xs text-red-300">planeObject.js — track fade threshold (implicit)</div>
+          <div class="text-red-400 text-xs mt-1">Change ADS-C timeout → edit 2–3 files</div>
+        </div>
+      </div>
+      <div class="bg-gray-950 rounded-lg p-4 border border-green-900">
+        <div class="text-xs font-bold text-green-400 mb-2">AFTER — one oracle</div>
+        <div class="flex flex-col gap-2 mt-1">
+          <div class="bg-green-950 rounded px-3 py-2 text-xs text-green-300">StalenessOracle.evaluate(model, now) → fresh|stale|dead</div>
+          <div class="bg-gray-800 rounded px-3 py-2 text-xs text-gray-300">reaper() — calls oracle, reacts to "dead"</div>
+          <div class="bg-gray-800 rounded px-3 py-2 text-xs text-gray-300">track fader — calls oracle, reacts to "stale"</div>
+          <div class="bg-gray-800 rounded px-3 py-2 text-xs text-gray-300">icon updater — calls oracle, reacts to level</div>
+          <div class="text-green-400 text-xs mt-1">Change ADS-C timeout → one constant in one file</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CANDIDATE 4 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="card bg-gray-900 rounded-xl border border-gray-700 p-6 space-y-5">
+
+  <div class="flex items-start justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-white">Candidate 4 — MarkerPipeline</h2>
+      <p class="text-gray-400 text-sm mt-1">Icon selection is scattered across four files; concentrate it behind a single interface</p>
+    </div>
+    <span class="badge-worth text-xs font-bold px-3 py-1 rounded-full ml-4 whitespace-nowrap">Worth exploring</span>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Files involved</div>
+    <div class="flex flex-wrap gap-2">
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/markers.js (1,495 lines — SVG definitions)</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/script.js:updateIcon() (selection logic)</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/planeObject.js (markerStyle cache)</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/defaults.js (colors per source type)</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Problem</div>
+    <p class="text-gray-300 text-sm">Answering "what icon does this aircraft display?" requires reading four files: <code class="text-yellow-300">defaults.js</code> for color per source type, <code class="text-yellow-300">markers.js</code> for SVG definitions keyed by aircraft category, <code class="text-yellow-300">script.js:updateIcon()</code> for the selection logic (military? helicopter? glider?), and <code class="text-yellow-300">planeObject.js</code> for the cache. The interface is shallow: to call <code class="text-yellow-300">updateIcon()</code> you must know the PlaneObject, the global config, and the current filter state. Adding a new aircraft category touches all four files.</p>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Solution</div>
+    <p class="text-gray-300 text-sm">Extract a <code class="text-green-300">MarkerPipeline</code> module. Interface: <code class="text-green-300">pipeline.select(model, config)</code> → <code class="text-green-300">MarkerSpec</code> (SVG string + color + scale). The pipeline owns the decision tree (military → helicopter → glider → default), the SVG lookup, the color resolution, and the cache. Callers receive a <code class="text-green-300">MarkerSpec</code> and render it; they never reason about aircraft categories.</p>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Benefits — Locality &amp; Leverage</div>
+    <ul class="text-gray-300 text-sm space-y-1 list-disc list-inside">
+      <li><strong>Locality:</strong> Adding a new aircraft category = one place. Tests confirm the right marker is selected.</li>
+      <li><strong>Leverage:</strong> Table view, info panel, and map icon all get the same marker from one pipeline — no inconsistency.</li>
+      <li><strong>Testability:</strong> <code class="text-green-300">pipeline.select()</code> is a pure function. Tests inject a PlaneModel, assert on a MarkerSpec. No DOM, no OL canvas.</li>
+    </ul>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Before / After</div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-gray-950 rounded-lg p-4 border border-red-900">
+        <div class="text-xs font-bold text-red-400 mb-2">BEFORE — 4 files, implicit chain</div>
+        <div class="mermaid text-xs" data-processed="true"><div id="dmermaid-1782520286190" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif;"><svg id="mermaid-1782520286190" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2412 512" style="max-width: 512px;" role="graphics-document document" aria-roledescription="error"><style>#mermaid-1782520286190{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#ccc;}#mermaid-1782520286190 .error-icon{fill:#a44141;}#mermaid-1782520286190 .error-text{fill:#ddd;stroke:#ddd;}#mermaid-1782520286190 .edge-thickness-normal{stroke-width:2px;}#mermaid-1782520286190 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1782520286190 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1782520286190 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1782520286190 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1782520286190 .marker{fill:lightgrey;stroke:lightgrey;}#mermaid-1782520286190 .marker.cross{stroke:lightgrey;}#mermaid-1782520286190 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-1782520286190 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><g><path class="error-icon" d="m411.313,123.313c6.25-6.25 6.25-16.375 0-22.625s-16.375-6.25-22.625,0l-32,32-9.375,9.375-20.688-20.688c-12.484-12.5-32.766-12.5-45.25,0l-16,16c-1.261,1.261-2.304,2.648-3.31,4.051-21.739-8.561-45.324-13.426-70.065-13.426-105.867,0-192,86.133-192,192s86.133,192 192,192 192-86.133 192-192c0-24.741-4.864-48.327-13.426-70.065 1.402-1.007 2.79-2.049 4.051-3.31l16-16c12.5-12.492 12.5-32.758 0-45.25l-20.688-20.688 9.375-9.375 32.001-31.999zm-219.313,100.687c-52.938,0-96,43.063-96,96 0,8.836-7.164,16-16,16s-16-7.164-16-16c0-70.578 57.422-128 128-128 8.836,0 16,7.164 16,16s-7.164,16-16,16z"></path><path class="error-icon" d="m459.02,148.98c-6.25-6.25-16.375-6.25-22.625,0s-6.25,16.375 0,22.625l16,16c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688 6.25-6.25 6.25-16.375 0-22.625l-16.001-16z"></path><path class="error-icon" d="m340.395,75.605c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688 6.25-6.25 6.25-16.375 0-22.625l-16-16c-6.25-6.25-16.375-6.25-22.625,0s-6.25,16.375 0,22.625l15.999,16z"></path><path class="error-icon" d="m400,64c8.844,0 16-7.164 16-16v-32c0-8.836-7.156-16-16-16-8.844,0-16,7.164-16,16v32c0,8.836 7.156,16 16,16z"></path><path class="error-icon" d="m496,96.586h-32c-8.844,0-16,7.164-16,16 0,8.836 7.156,16 16,16h32c8.844,0 16-7.164 16-16 0-8.836-7.156-16-16-16z"></path><path class="error-icon" d="m436.98,75.605c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688l32-32c6.25-6.25 6.25-16.375 0-22.625s-16.375-6.25-22.625,0l-32,32c-6.251,6.25-6.251,16.375-0.001,22.625z"></path><text class="error-text" x="1440" y="250" font-size="150px" style="text-anchor: middle;">Syntax error in text</text><text class="error-text" x="1250" y="400" font-size="100px" style="text-anchor: middle;">mermaid version 10.9.6</text></g></svg></div></div>
+      </div>
+      <div class="bg-gray-950 rounded-lg p-4 border border-green-900">
+        <div class="text-xs font-bold text-green-400 mb-2">AFTER — one deep module</div>
+        <div class="mermaid text-xs" data-processed="true"><div id="dmermaid-1782520286194" style="font-family: &quot;trebuchet ms&quot;, verdana, arial, sans-serif;"><svg id="mermaid-1782520286194" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2412 512" style="max-width: 512px;" role="graphics-document document" aria-roledescription="error"><style>#mermaid-1782520286194{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#ccc;}#mermaid-1782520286194 .error-icon{fill:#a44141;}#mermaid-1782520286194 .error-text{fill:#ddd;stroke:#ddd;}#mermaid-1782520286194 .edge-thickness-normal{stroke-width:2px;}#mermaid-1782520286194 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1782520286194 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1782520286194 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1782520286194 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1782520286194 .marker{fill:lightgrey;stroke:lightgrey;}#mermaid-1782520286194 .marker.cross{stroke:lightgrey;}#mermaid-1782520286194 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-1782520286194 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><g><path class="error-icon" d="m411.313,123.313c6.25-6.25 6.25-16.375 0-22.625s-16.375-6.25-22.625,0l-32,32-9.375,9.375-20.688-20.688c-12.484-12.5-32.766-12.5-45.25,0l-16,16c-1.261,1.261-2.304,2.648-3.31,4.051-21.739-8.561-45.324-13.426-70.065-13.426-105.867,0-192,86.133-192,192s86.133,192 192,192 192-86.133 192-192c0-24.741-4.864-48.327-13.426-70.065 1.402-1.007 2.79-2.049 4.051-3.31l16-16c12.5-12.492 12.5-32.758 0-45.25l-20.688-20.688 9.375-9.375 32.001-31.999zm-219.313,100.687c-52.938,0-96,43.063-96,96 0,8.836-7.164,16-16,16s-16-7.164-16-16c0-70.578 57.422-128 128-128 8.836,0 16,7.164 16,16s-7.164,16-16,16z"></path><path class="error-icon" d="m459.02,148.98c-6.25-6.25-16.375-6.25-22.625,0s-6.25,16.375 0,22.625l16,16c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688 6.25-6.25 6.25-16.375 0-22.625l-16.001-16z"></path><path class="error-icon" d="m340.395,75.605c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688 6.25-6.25 6.25-16.375 0-22.625l-16-16c-6.25-6.25-16.375-6.25-22.625,0s-6.25,16.375 0,22.625l15.999,16z"></path><path class="error-icon" d="m400,64c8.844,0 16-7.164 16-16v-32c0-8.836-7.156-16-16-16-8.844,0-16,7.164-16,16v32c0,8.836 7.156,16 16,16z"></path><path class="error-icon" d="m496,96.586h-32c-8.844,0-16,7.164-16,16 0,8.836 7.156,16 16,16h32c8.844,0 16-7.164 16-16 0-8.836-7.156-16-16-16z"></path><path class="error-icon" d="m436.98,75.605c3.125,3.125 7.219,4.688 11.313,4.688 4.094,0 8.188-1.563 11.313-4.688l32-32c6.25-6.25 6.25-16.375 0-22.625s-16.375-6.25-22.625,0l-32,32c-6.251,6.25-6.251,16.375-0.001,22.625z"></path><text class="error-text" x="1440" y="250" font-size="150px" style="text-anchor: middle;">Syntax error in text</text><text class="error-text" x="1250" y="400" font-size="100px" style="text-anchor: middle;">mermaid version 10.9.6</text></g></svg></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CANDIDATE 5 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="card bg-gray-900 rounded-xl border border-gray-700 p-6 space-y-5">
+
+  <div class="flex items-start justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-white">Candidate 5 — Extract formatter.js to a deep DisplayFormatter</h2>
+      <p class="text-gray-400 text-sm mt-1">The one module that could be tested today but isn't — low effort, immediate wins</p>
+    </div>
+    <span class="badge-spec text-xs font-bold px-3 py-1 rounded-full ml-4 whitespace-nowrap">Speculative</span>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Files involved</div>
+    <div class="flex flex-wrap gap-2">
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/formatter.js (453 lines)</span>
+      <span class="bg-gray-800 text-blue-300 text-xs px-2 py-1 rounded">html/js/defaults.js (unit prefs)</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Problem</div>
+    <p class="text-gray-300 text-sm"><code class="text-yellow-300">formatter.js</code> is entirely pure functions (unit conversion, precision rounding, null handling) but has zero tests. It reads unit preferences from globals rather than accepting them as arguments, so it can't be called without the global being set up. This is fixable without a large refactor.</p>
+  </div>
+
+  <div>
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Solution</div>
+    <p class="text-gray-300 text-sm">Accept unit preferences as a parameter (dependency injection). Return display strings, don't mutate DOM. All 453 lines become testable pure functions with trivial setup. Mark as speculative because the deletion test is weak: formatter.js is already close to what it should be; this is polish, not a deep architectural change.</p>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TOP RECOMMENDATION -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="bg-blue-950 border border-blue-700 rounded-xl p-6 space-y-3">
+  <h2 class="text-xl font-bold text-blue-100">Top Recommendation</h2>
+  <p class="text-blue-200 text-sm"><strong>Start with Candidate 2 (commit the PlaneModel seam)</strong>, then immediately follow with Candidate 1 (AircraftUpdatePipeline).</p>
+  <p class="text-blue-200 text-sm">The two-model problem is an active desync risk: every new feature must update both PlaneObject and PlaneModel or introduce a subtle bug. Committing to PlaneModel first shrinks the target surface, so Candidate 1's pipeline has a clean model to write to. The combination removes the largest source of test debt (the pipeline is testable only after the model is single) and eliminates the most common cause of future bugs (dual-update requirement). Candidates 3 and 4 are high-value but can follow in any order once the seam is clean.</p>
+
+  <div class="mt-3 grid grid-cols-4 gap-3">
+    <div class="bg-blue-900 rounded p-3 text-center">
+      <div class="text-xs text-blue-400 font-bold">Step 1</div>
+      <div class="text-xs text-blue-200 mt-1">Commit PlaneModel seam<br>→ absorb PlaneObject data</div>
+    </div>
+    <div class="bg-blue-900 rounded p-3 text-center">
+      <div class="text-xs text-blue-400 font-bold">Step 2</div>
+      <div class="text-xs text-blue-200 mt-1">Extract AircraftUpdatePipeline<br>→ testable ingest()</div>
+    </div>
+    <div class="bg-blue-900 rounded p-3 text-center">
+      <div class="text-xs text-blue-400 font-bold">Step 3</div>
+      <div class="text-xs text-blue-200 mt-1">StalenessOracle<br>→ concentrate thresholds</div>
+    </div>
+    <div class="bg-blue-900 rounded p-3 text-center">
+      <div class="text-xs text-blue-400 font-bold">Step 4</div>
+      <div class="text-xs text-blue-200 mt-1">MarkerPipeline<br>→ pure icon selection</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /max-w -->
+
+<div class="text-center text-xs text-gray-700 py-6">Generated by Claude Code · adsb-map architecture review</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+</script>
+
+
+<div class="mermaidTooltip" style="opacity: 0;"></div></body></html>
