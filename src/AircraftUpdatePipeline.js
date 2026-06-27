@@ -1,5 +1,6 @@
 import { normalizeAircraft } from './normalizeAircraft.js';
 import { PlaneModel } from './PlaneModel.js';
+import { StalenessOracle } from './StalenessOracle.js';
 
 export class MapPlaneStore {
     constructor() { this._planes = new Map(); }
@@ -8,8 +9,9 @@ export class MapPlaneStore {
 }
 
 export class AircraftUpdatePipeline {
-    constructor(store) {
+    constructor(store, oracle = new StalenessOracle()) {
         this._store = store;
+        this._oracle = oracle;
     }
 
     ingest({ now, aircraft }) {
@@ -21,9 +23,10 @@ export class AircraftUpdatePipeline {
             const model = isNew ? new PlaneModel(hex) : this._store.get(hex);
             model.updateData(data);
             if (isNew) this._store.set(hex, model);
-            const lastMessageTime = data.seen != null ? now - data.seen : null;
-            const stale = model.isStale(now, lastMessageTime);
-            const changeType = stale ? 'stale' : isNew ? 'new' : 'updated';
+            const level = this._oracle.evaluate(model, now);
+            const changeType = level === 'dead' ? 'dead'
+                : level === 'stale' ? 'stale'
+                : isNew ? 'new' : 'updated';
             changes.push({ hex, changeType, model });
         }
         return changes;

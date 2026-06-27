@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { AircraftUpdatePipeline, MapPlaneStore } from '../AircraftUpdatePipeline.js';
+import { StalenessOracle } from '../StalenessOracle.js';
 import { PlaneModel } from '../PlaneModel.js';
 
 describe('AircraftUpdatePipeline.ingest()', () => {
@@ -60,6 +61,16 @@ describe('AircraftUpdatePipeline.ingest()', () => {
             aircraft: [{ hex: 'a1b2c3', lat: 45.0, lon: -93.0, alt_baro: 35000, gs: 420, track: 90, seen: 16, type: 'adsb' }],
         });
         expect(changes[0].changeType).toBe('stale');
+    });
+
+    it('returns changeType:dead for aircraft past the reap threshold', () => {
+        const store = new MapPlaneStore();
+        const pipeline = new AircraftUpdatePipeline(store, new StalenessOracle());
+        const changes = pipeline.ingest({
+            now: 1000,
+            aircraft: [{ hex: 'a1b2c3', lat: 45.0, lon: -93.0, alt_baro: 35000, gs: 420, track: 90, seen: 481, type: 'adsb' }],
+        });
+        expect(changes[0].changeType).toBe('dead');
     });
 
     it('returns changeType:new for first-seen aircraft within the timeout', () => {
